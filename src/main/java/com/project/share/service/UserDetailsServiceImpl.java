@@ -15,7 +15,7 @@ import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 
-@Service("UserDetailsServiceImpl")
+@Service
 @Transactional
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired

@@ -6,7 +6,7 @@
     <title>Something wrong</title>
 </head>
 <body>
-<h2>Sorry. Something went wrong... We are working on it!</h2>
-<a href="<c:url value="${contextPath}/login" />">Sign in again</a>
+    <h2>Sorry. Something went wrong... We are working on it!</h2>
+    <a href="<c:url value="${contextPath}/login" />">Sign in again</a>
 </body>
 </html>

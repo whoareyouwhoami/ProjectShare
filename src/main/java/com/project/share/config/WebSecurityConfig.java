@@ -1,9 +1,7 @@
 package com.project.share.config;
 
 import com.project.share.config.security.CustomAuthenticationFailHandler;
-import com.project.share.config.security.CustomAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,14 +13,17 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    @Qualifier("UserDetailsServiceImpl")
     private UserDetailsService userDetailsService;
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return super.userDetailsService();
+    }
 
     @Bean
     public BCryptPasswordEncoder encode() {
@@ -63,6 +64,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/login"  , "/register").permitAll()
                 // .antMatchers("/").hasRole("USER")
+                .antMatchers(
+                        "/secured/**",
+                        "/secured/success",
+                        "/secured/socket",
+                        "/secured/success"
+
+                ).authenticated()
                 .anyRequest().authenticated()
                 .and()
                 // .csrf().disable()

@@ -6,12 +6,12 @@
     <title>Welcome</title>
 </head>
 <body>
-<c:if test="${pageContext.request.userPrincipal.name != null}">
-    <h2>Welcome ${pageContext.request.userPrincipal.name}</h2>
+    <c:if test="${pageContext.request.userPrincipal.name != null}">
+        <h2>Welcome ${pageContext.request.userPrincipal.name}</h2>
 
-    <a href="<c:url value="${contextPath}/project/upload" />">Project</a>
-    <a href="<c:url value="${contextPath}/logout" />">Logout</a>
-</c:if>
-
+        <a href="<c:url value="${contextPath}/project/upload" />">Project</a>
+        <a href="<c:url value="${contextPath}/messages" />">Message</a>
+        <a href="<c:url value="${contextPath}/logout" />">Logout</a>
+    </c:if>
 </body>
 </html>
