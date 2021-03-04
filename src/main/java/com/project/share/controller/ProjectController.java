@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -31,8 +32,19 @@ public class ProjectController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/upload")
+    @GetMapping(path = {"", "/"})
     public ModelAndView projectHome() {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("project/projectHome");
+
+        List<Project> projectList = projectService.getAllProject();
+        mv.addObject("projectList", projectList);
+
+        return mv;
+    }
+
+    @GetMapping("/upload")
+    public ModelAndView projectUpload() {
         return new ModelAndView("project/projectUpload", "ProjectForm", new Project());
     }
 
@@ -63,12 +75,24 @@ public class ProjectController {
         return mv;
     }
 
+    @GetMapping("/view")
+    public ModelAndView projectView(Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("project/projectHome");
+
+        User user = userService.getUserByEmail(principal.getName());
+        List<Project> projectList = projectService.getAllUserProject(user);
+
+        mv.addObject("projectList", projectList);
+        return mv;
+    }
+
     @GetMapping("/view/{pid}")
-    public ModelAndView projectViewDetail(@PathVariable("pid") int pid, Model model) throws ProjectException {
-        Project project = null;
+    public ModelAndView projectViewDetail(@PathVariable("pid") int pid, Model model) {
         ModelAndView mv = new ModelAndView();
         mv.setViewName("project/projectView");
 
+        Project project = null;
         try {
             project = (Project) model.getAttribute("proj_detail");
             System.out.println(project.getTitle());
@@ -83,14 +107,14 @@ public class ProjectController {
             }
         }
 
-        if(project != null)
+        if(project != null) {
             mv.addObject("p_detail", project);
-
+        }
         return mv;
     }
 
     @GetMapping("/update/{pid}")
-    public ModelAndView projectUpdate(@PathVariable("pid") int pid, @ModelAttribute("ProjectForm") Project project, Principal principal) throws ProjectException {
+    public ModelAndView projectUpdate(@PathVariable("pid") int pid, @ModelAttribute("ProjectForm") Project project, Principal principal) {
         try {
             Project p = projectService.getProject(pid);
             if(p.getOwner().getEmail().equals(principal.getName()))
@@ -139,8 +163,7 @@ public class ProjectController {
     }
 
     /*
-     * FIX DELETE PART
-     * ALERT BEFORE DELETION
+     * Add - ALERT BEFORE DELETION
      */
     @GetMapping("/delete/{pid}")
     public String projectDelete(@PathVariable("pid") int pid, Principal principal) {

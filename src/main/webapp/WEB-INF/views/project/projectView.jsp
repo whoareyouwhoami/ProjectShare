@@ -17,9 +17,18 @@
         <div>
             <h1>View Project</h1>
             <a href="<c:url value="${contextPath}/home" />">Home</a>
+            <a href="<c:url value="${contextPath}/project" />">Project</a>
+            <a href="<c:url value="${contextPath}/project/upload" />">Upload</a>
+            <a href="<c:url value="${contextPath}/project/view" />">View My Project</a>
         </div>
 
         <div>
+            <c:if test="${p_detail == null}">
+                <div>
+                    <p>Project doesn't exist...</p>
+                </div>
+            </c:if>
+
             <c:if test="${p_detail != null}">
                 <div>
                     <p>Title: ${p_detail.title}</p>
@@ -35,25 +44,16 @@
                 </div>
 
                 <div>
-                    <a href="<c:url value="${contextPath}/project/update/${p_detail.id}" />">Update</a>
-                    <a href="<c:url value="${contextPath}/project/delete/${p_detail.id}" />">Delete</a>
-                </div>
-            </c:if>
-            <c:if test="${p_detail == null}">
-                <div>
-                    <p>Project doesn't exist...</p>
+                    <c:if test="${pageContext.request.userPrincipal.name == p_detail.user.iterator().next().email}">
+                        <a href="<c:url value="${contextPath}/project/update/${p_detail.id}" />">Update</a>
+                        <a href="<c:url value="${contextPath}/project/delete/${p_detail.id}" />">Delete</a>
+                    </c:if>
+                    <c:if test="${pageContext.request.userPrincipal.name != p_detail.user.iterator().next().email}">
+                        <a href="<c:url value="${contextPath}/messages/p/${p_detail.id}" />">Send message</a>
+                    </c:if>
                 </div>
             </c:if>
         </div>
-
-
-        <footer class="footer mt-auto py-3">
-            <div class="container">
-                <small class="text-muted">Copyright &copy; J Production 2021</small>
-                <br/>
-                <small class="text-muted">All Right Reserved</small>
-            </div>
-        </footer>
     </div>
 </body>
 </html>

@@ -10,7 +10,10 @@ public interface ProjectService {
     Project getProject(int pid);
 
     // Get all projects
-    List<Project> getAllProjects(User user);
+    List<Project> getAllProject();
+
+    // Get all user projects
+    List<Project> getAllUserProject(User user);
 
     // Save project
     Project saveProject(Project project);

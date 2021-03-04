@@ -19,6 +19,8 @@
         <div>
             <h1>Upload project</h1>
             <a href="<c:url value="${contextPath}/home" />">Home</a>
+            <a href="<c:url value="${contextPath}/project" />">Project</a>
+            <a href="<c:url value="${contextPath}/project/view" />">View My Project</a>
         </div>
 
         <form:form method="post" modelAttribute="ProjectForm">
@@ -66,14 +68,6 @@
                 <a href="<c:url value="${contextPath}/home" />">Cancel</a>
             </div>
         </form:form>
-
-        <footer class="footer mt-auto py-3">
-            <div class="container">
-                <small class="text-muted">Copyright &copy; J Production 2021</small>
-                <br/>
-                <small class="text-muted">All Right Reserved</small>
-            </div>
-        </footer>
     </div>
 </body>
 </html>

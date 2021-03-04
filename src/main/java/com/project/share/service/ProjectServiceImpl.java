@@ -27,7 +27,12 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Project> getAllProjects(User user) {
+    public List<Project> getAllProject() {
+        return projectDao.findAll();
+    }
+
+    @Override
+    public List<Project> getAllUserProject(User user) {
         return projectDao.findAllByUser(user);
     }
 
