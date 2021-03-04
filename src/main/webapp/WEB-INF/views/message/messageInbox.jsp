@@ -20,27 +20,28 @@
         </div>
         <div>
             <div>
-                <h2>Messages inbox</h2>
+                <h1>Messages inbox</h1>
+                <a href="<c:url value="${contextPath}/home" />">Home</a>
+                <a href="<c:url value="${contextPath}/project" />">Project</a>
+                <a href="<c:url value="${contextPath}/messages" />">Message</a>
             </div>
-            <div>
+
+            <div style="overflow: auto; height: 700px; width: 25%; margin-top: 15px;">
+
                 <c:forEach var="tempMessageList" items="${messageList}" varStatus="status">
-                    <small> Message ID: ${tempMessageList.key}</small>
-                    <c:forEach var="m" items="${tempMessageList.value}" varStatus="status">
-                        <div>
-                            <div>
-                                <div>
-                                    <div>
-                                        <strong>${tempMessageList.key}</strong>
-                                        <h3>Project: ${m.key.title}</h3>
-                                        <div>@${m.value.firstName}</div>
-                                        <p>${m.key.description}</p>
-                                        <a href="${contextPath}/messages/${tempMessageList.key}">SEND MESSAGE</a>
-                                    </div>
-                                </div>
+                    <div style="padding: 5px; border-bottom: 1px solid grey;">
+                        <small> Message ID: ${tempMessageList.key}</small>
+
+                        <c:forEach var="m" items="${tempMessageList.value}" varStatus="status">
+                            <div style="margin-bottom: 3px">
+                                <p style="margin: 3px"><b>@${m.value.firstName}</b></p>
+                                <p style="margin: 3px;">Project - ${m.key.title}</p>
+                                <a href="${contextPath}/messages/${tempMessageList.key}">Send message</a>
                             </div>
-                        </div>
-                    </c:forEach>
+                        </c:forEach>
+                    </div>
                 </c:forEach>
+
             </div>
         </div>
     </div>
