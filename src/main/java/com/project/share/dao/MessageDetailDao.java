@@ -2,9 +2,11 @@ package com.project.share.dao;
 
 import com.project.share.model.ChatMessageDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface MessageDetailDao extends JpaRepository<ChatMessageDetail, Integer> {
     List<ChatMessageDetail> findAllByUserOneOrUserTwo(int userIdA, int userIdB);
 

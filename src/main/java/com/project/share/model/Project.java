@@ -7,10 +7,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -60,6 +58,16 @@ public class Project {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "ProjectUser", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> user;
+
+    public Project() {}
+
+    public Project(String title, String description, int member, LocalDate dateStart, LocalDate dateEnd) {
+        this.title = title;
+        this.description = description;
+        this.member = member;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+    }
 
     public int getId() {
         return id;
