@@ -2,6 +2,7 @@ package com.project.share.config;
 
 import com.project.share.exception.KafkaHandler;
 import com.project.share.model.ChatMessage;
+import com.project.share.model.Project;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -58,7 +59,7 @@ public class KafkaConfig {
         return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), new JsonDeserializer<>(ChatMessage.class));
     }
 
-    @Bean(name = "listerFactoryMessaging")
+    @Bean(name = "listenerFactoryMessaging")
     public ConcurrentKafkaListenerContainerFactory<String, ChatMessage> kafkaListenerContainerFactoryMessaging() {
         ConcurrentKafkaListenerContainerFactory<String, ChatMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactoryMessaging());
@@ -78,7 +79,7 @@ public class KafkaConfig {
         return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), new JsonDeserializer<>(ChatMessage.class));
     }
 
-    @Bean(name = "listerFactoryRedis")
+    @Bean(name = "listenerFactoryRedis")
     public ConcurrentKafkaListenerContainerFactory<String, ChatMessage> kafkaListenerContainerFactoryRedis() {
         ConcurrentKafkaListenerContainerFactory<String, ChatMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactoryRedis());
@@ -86,4 +87,23 @@ public class KafkaConfig {
         return factory;
     }
 
+    // Elastic Search
+    public ConsumerFactory<String, Project> consumerFactoryES() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVER);
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, "groupES");
+        config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+        return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), new JsonDeserializer<>(Project.class));
+    }
+
+    @Bean(name = "listenerFactoryES")
+    public ConcurrentKafkaListenerContainerFactory<String, Project> kafkaListenerContainerFactoryES() {
+        ConcurrentKafkaListenerContainerFactory<String, Project> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactoryES());
+        factory.setErrorHandler(new KafkaHandler());
+        return factory;
+    }
 }

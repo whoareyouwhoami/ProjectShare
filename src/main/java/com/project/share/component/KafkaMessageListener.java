@@ -1,6 +1,8 @@
 package com.project.share.component;
 
 import com.project.share.model.ChatMessage;
+import com.project.share.model.Project;
+import com.project.share.service.ProjectService;
 import com.project.share.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -16,15 +18,24 @@ public class KafkaMessageListener {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private ProjectService projectService;
+
     // Message
-    @KafkaListener(topics = "topicMessage", groupId = "groupMessage", containerFactory = "listerFactoryMessaging")
+    @KafkaListener(topics = "topicMessage", groupId = "groupMessage", containerFactory = "listenerFactoryMessaging")
     public void listenMessaging(ChatMessage message) {
         simpMessagingTemplate.convertAndSendToUser(message.getToUser(), "/secured/user/queue/specific-user", message);
     }
 
     // Redis
-    @KafkaListener(topics = "topicMessage", groupId = "groupRedis", containerFactory = "listerFactoryRedis")
+    @KafkaListener(topics = "topicMessage", groupId = "groupRedis", containerFactory = "listenerFactoryRedis")
     public void listenRedis(ChatMessage message) {
         redisService.saveMessage(message);
+    }
+
+    // ES
+    @KafkaListener(topics = "topicES", groupId = "groupES", containerFactory = "listenerFactoryES")
+    public void listenES(Project project) {
+        projectService.esSaveProject(project);
     }
 }

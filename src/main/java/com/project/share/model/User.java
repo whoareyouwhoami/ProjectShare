@@ -1,5 +1,6 @@
 package com.project.share.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.share.validate.ValidCheckEmail;
 import com.project.share.validate.ValidCheckPasswordConfirm;
 import org.hibernate.annotations.CreationTimestamp;
@@ -64,9 +65,10 @@ public class User implements UserDetails {
     @JoinTable(name = "UserRole", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "owner")
     private Project project;
-
+    
     @ManyToMany(mappedBy = "user")
     private List<Project> projects;
 

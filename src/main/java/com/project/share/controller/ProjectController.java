@@ -3,6 +3,7 @@ package com.project.share.controller;
 import com.project.share.exception.ProjectException;
 import com.project.share.model.Project;
 import com.project.share.model.User;
+import com.project.share.service.KafkaService;
 import com.project.share.service.ProjectService;
 import com.project.share.service.UserService;
 import org.slf4j.Logger;
@@ -31,6 +32,9 @@ public class ProjectController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private KafkaService kafkaService;
 
     @GetMapping(path = {"", "/"})
     public ModelAndView projectHome() {
@@ -70,6 +74,9 @@ public class ProjectController {
         Project savedProject = projectService.saveProject(project);
         rm.addFlashAttribute("proj_detail", savedProject);
         mv.setViewName("redirect:/project/view/" + project.getId());
+
+        savedProject.setOwnerName(savedProject.getOwner().getFirstName() + " " + savedProject.getOwner().getLastName());
+        kafkaService.send("topicES", savedProject);
 
         log.info("SUCCESS UPLOAD");
         return mv;
@@ -160,6 +167,12 @@ public class ProjectController {
 
         log.info("SUCCESS UPDATE");
         return mv;
+    }
+
+    @GetMapping("/search")
+    public String projectSearch() {
+
+        return "project/projectSearch";
     }
 
     /*

@@ -1,11 +1,11 @@
 package com.project.share.service;
 
 import com.project.share.dao.ProjectDao;
+import com.project.share.es.ProjectSearchDao;
 import com.project.share.exception.ProjectException;
 import com.project.share.model.Project;
 import com.project.share.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +17,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private ProjectDao projectDao;
+
+    @Autowired
+    private ProjectSearchDao projectSearchDao;
 
     @Override
     public Project getProject(int pid) {
@@ -62,4 +65,14 @@ public class ProjectServiceImpl implements ProjectService {
         } catch (Exception e) {
         }
     }
+
+    /**
+     * Elastic Search
+     */
+    @Override
+    public void esSaveProject(Project project) {
+        projectSearchDao.save(project);
+    }
+
+
 }

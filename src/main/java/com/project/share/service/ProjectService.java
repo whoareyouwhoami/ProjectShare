@@ -23,4 +23,10 @@ public interface ProjectService {
 
     // Remove project
     void removeProject(int pid);
+
+
+    /**
+     * Elasticsearch
+     */
+    void esSaveProject(Project project);
 }
