@@ -42,13 +42,9 @@ MySQL
 - Redis에 저장되는 메시지 내용을 백업하는 용도로 사용함
 
 Redis
--  메시지 정보를 빠른 속도로 저장하고 읽기 위해 in-memory 데이터베이스로 사용
+- 메시지 정보를 빠른 속도로 저장하고 읽기 위해 in-memory 데이터베이스로 사용
+- 프로젝트 정보를 저장하고 검색하는 용도로 사용
 
-Elasticsearch
-- 프로젝트를 찾는 용도로 사용함
+RediSearch
+- Redis 기반 검색 엔진
 ```
-
-
-### 카프카 아키텍쳐
-
-![Kafka Architecture](docs/pics/kafka_architecture.png)
