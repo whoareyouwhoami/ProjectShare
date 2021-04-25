@@ -76,7 +76,9 @@ public class ProjectController {
         mv.setViewName("redirect:/project/view/" + project.getId());
 
         savedProject.setOwnerName(savedProject.getOwner().getFirstName() + " " + savedProject.getOwner().getLastName());
-        kafkaService.send("topicES", savedProject);
+
+        // kafkaService.send("topicES", savedProject);
+        kafkaService.send("topicRediSearch", project);
 
         log.info("SUCCESS UPLOAD");
         return mv;

@@ -33,9 +33,14 @@ public class KafkaMessageListener {
         redisService.saveMessage(message);
     }
 
-    // ES
-    @KafkaListener(topics = "topicES", groupId = "groupES", containerFactory = "listenerFactoryES")
-    public void listenES(Project project) {
-        projectService.esSaveProject(project);
+    @KafkaListener(topics = "topicRediSearch", groupId = "groupRedis", containerFactory = "listenerFactoryRediSearch")
+    public void listenRediSearch(Project project) {
+        redisService.saveProject(project);
     }
+
+    // ES
+    // @KafkaListener(topics = "topicES", groupId = "groupES", containerFactory = "listenerFactoryES")
+    // public void listenES(Project project) {
+    //     projectService.esSaveProject(project);
+    // }
 }

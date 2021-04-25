@@ -8,11 +8,13 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "com.project.share.dao")
-@EnableElasticsearchRepositories(basePackages = "com.project.share.es")
+@EnableRedisRepositories(basePackages = "com.project.share.redis")
+// @EnableElasticsearchRepositories(basePackages = "com.project.share.es")
 public class ProjectShareApplication {
 
     public static void main(String[] args) {

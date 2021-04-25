@@ -28,5 +28,5 @@ public interface ProjectService {
     /**
      * Elasticsearch
      */
-    void esSaveProject(Project project);
+    // void esSaveProject(Project project);
 }

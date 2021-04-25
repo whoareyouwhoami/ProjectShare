@@ -1,7 +1,7 @@
 package com.project.share.service;
 
 import com.project.share.dao.ProjectDao;
-import com.project.share.es.ProjectSearchDao;
+// import com.project.share.es.ProjectSearchDao;
 import com.project.share.exception.ProjectException;
 import com.project.share.model.Project;
 import com.project.share.model.User;
@@ -18,8 +18,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ProjectDao projectDao;
 
-    @Autowired
-    private ProjectSearchDao projectSearchDao;
+    // @Autowired
+    // private ProjectSearchDao projectSearchDao;
 
     @Override
     public Project getProject(int pid) {
@@ -69,10 +69,10 @@ public class ProjectServiceImpl implements ProjectService {
     /**
      * Elastic Search
      */
-    @Override
-    public void esSaveProject(Project project) {
-        projectSearchDao.save(project);
-    }
+    // @Override
+    // public void esSaveProject(Project project) {
+    //     projectSearchDao.save(project);
+    // }
 
 
 }

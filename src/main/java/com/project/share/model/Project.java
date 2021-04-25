@@ -12,9 +12,11 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.project.share.validate.ValidateProjectDateDifference;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.Reference;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.redis.core.RedisHash;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -28,7 +30,7 @@ import java.util.Set;
         fieldStart = "dateStart",
         fieldEnd = "dateEnd"
 )
-@Document(indexName = "project")
+@RedisHash
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,9 +74,10 @@ public class Project {
     private LocalDateTime dateModified;
 
     @Transient
-    @Field(type = FieldType.Nested, includeInParent = true)
+    // @Field(type = FieldType.Nested, includeInParent = true)
     private String ownerName;
 
+    // @Reference
     @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL)
     private User owner;
@@ -85,6 +88,7 @@ public class Project {
     @Column(columnDefinition="BIT(1) DEFAULT 0")
     private boolean status;
 
+    // @Reference
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "ProjectUser", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))

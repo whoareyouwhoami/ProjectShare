@@ -106,4 +106,25 @@ public class KafkaConfig {
         factory.setErrorHandler(new KafkaHandler());
         return factory;
     }
+
+    // RediSearch
+    public ConsumerFactory<String, Project> consumerFactoryRediSearch() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVER);
+        // config.put(ConsumerConfig.GROUP_ID_CONFIG, "groupRedis");
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, "groupRedis");
+        config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+        return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), new JsonDeserializer<>(Project.class));
+    }
+
+    @Bean(name = "listenerFactoryRediSearch")
+    public ConcurrentKafkaListenerContainerFactory<String, Project> kafkaListenerContainerFactoryRediSearch() {
+        ConcurrentKafkaListenerContainerFactory<String, Project> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactoryRediSearch());
+        factory.setErrorHandler(new KafkaHandler());
+        return factory;
+    }
 }
