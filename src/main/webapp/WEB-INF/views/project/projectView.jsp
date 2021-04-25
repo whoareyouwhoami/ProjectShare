@@ -19,6 +19,7 @@
             <a href="<c:url value="${contextPath}/home" />">Home</a>
             <a href="<c:url value="${contextPath}/project" />">Project</a>
             <a href="<c:url value="${contextPath}/project/upload" />">Upload</a>
+            <a href="<c:url value="${contextPath}/project/search" />">Search</a>
             <a href="<c:url value="${contextPath}/project/view" />">View My Project</a>
         </div>
 

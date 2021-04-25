@@ -5,10 +5,12 @@ import com.project.share.model.Project;
 import com.project.share.model.User;
 import com.project.share.service.KafkaService;
 import com.project.share.service.ProjectService;
+import com.project.share.service.RedisService;
 import com.project.share.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +22,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
@@ -35,6 +38,9 @@ public class ProjectController {
 
     @Autowired
     private KafkaService kafkaService;
+
+    @Autowired
+    private RedisService redisService;
 
     @GetMapping(path = {"", "/"})
     public ModelAndView projectHome() {
@@ -172,9 +178,20 @@ public class ProjectController {
     }
 
     @GetMapping("/search")
-    public String projectSearch() {
+    public ModelAndView projectSearch(@RequestParam(name="q", required = false) String query) {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("project/projectSearch");
 
-        return "project/projectSearch";
+        if(query != null) {
+            query = query.strip();
+            List<Map<Object, Object>> searchResult = redisService.searchProject(query);
+            if(searchResult.size() == 0) {
+                mv.addObject("emptyResult", 0);
+                return mv;
+            }
+            mv.addObject("searchResult", searchResult);
+        }
+        return mv;
     }
 
     /*
