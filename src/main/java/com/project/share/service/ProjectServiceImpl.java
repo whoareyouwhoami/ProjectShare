@@ -18,15 +18,11 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ProjectDao projectDao;
 
-    // @Autowired
-    // private ProjectSearchDao projectSearchDao;
-
     @Override
     public Project getProject(int pid) {
-        return projectDao.findById(pid)
-                .orElseThrow(
-                        () -> new ProjectException("Project doesn't exist")
-                );
+        return projectDao
+                .findById(pid)
+                .orElse(null);
     }
 
     @Override
@@ -45,17 +41,16 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project updateProject(Project projectPrev, Project projectNew) {
-        projectPrev.setTitle(projectNew.getTitle());
-        projectPrev.setDescription(projectNew.getDescription());
-        projectPrev.setMember(projectNew.getMember());
-
-        if(projectNew.getDateStart().isBefore(projectPrev.getDateStart()))
+    public Project updateProject(Project prev, Project current) {
+        if(current.getDateStart().isBefore(prev.getDateStart())) {
             return null;
-
-        projectPrev.setDateStart(projectNew.getDateStart());
-        projectPrev.setDateEnd(projectNew.getDateEnd());
-        return projectDao.save(projectPrev);
+        }
+        prev.setTitle(current.getTitle());
+        prev.setDescription(current.getDescription());
+        prev.setMember(current.getMember());
+        prev.setDateStart(current.getDateStart());
+        prev.setDateEnd(current.getDateEnd());
+        return projectDao.save(prev);
     }
 
     @Override
@@ -65,14 +60,4 @@ public class ProjectServiceImpl implements ProjectService {
         } catch (Exception e) {
         }
     }
-
-    /**
-     * Elastic Search
-     */
-    // @Override
-    // public void esSaveProject(Project project) {
-    //     projectSearchDao.save(project);
-    // }
-
-
 }

@@ -13,10 +13,6 @@ public class KafkaServiceImpl implements KafkaService {
 
     @Override
     public void send(String topic, Object object) {
-        try {
-            kafkaTemplate.send(topic, object);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        kafkaTemplate.send(topic, object);
     }
 }

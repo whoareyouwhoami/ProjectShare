@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @ValidCheckPasswordConfirm(
@@ -71,6 +72,25 @@ public class User implements UserDetails {
     
     @ManyToMany(mappedBy = "user")
     private List<Project> projects;
+
+    /*
+     * =====================================
+     * CHANGES MADE FROM THIS POINT
+     * =====================================
+     */
+    @OneToMany(mappedBy = "user")
+    private Set<MessageProjectUser> messageProjectUserSet;
+
+    /*
+     * THIS MAY NOT BE NECESSARY SINCE UNIDIRECTIONAL
+     *
+     * @OneToMany(mappedBy = "sender")
+     * private Set<MessageDetail> messageDetailSet;
+     *
+     * @OneToMany(mappedBy = "sender")
+     * private Set<MessageProjectDetail> messageProjecrtDetailSet;
+     */
+
 
     public User() {
     }
@@ -230,5 +250,13 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
+    }
+
+    public Set<MessageProjectUser> getMessageProjectUserSet() {
+        return messageProjectUserSet;
+    }
+
+    public void setMessageProjectUserSet(Set<MessageProjectUser> messageProjectUserSet) {
+        this.messageProjectUserSet = messageProjectUserSet;
     }
 }

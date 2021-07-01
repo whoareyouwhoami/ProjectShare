@@ -67,7 +67,6 @@ public class UserServiceImpl implements UserService {
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
         user.setEnabled(true);
-
         return userDao.save(user);
     }
 
@@ -75,17 +74,13 @@ public class UserServiceImpl implements UserService {
     public User getUserByEmail(String email) {
         return userDao
                 .findByEmail(email)
-                .orElseThrow(
-                        () -> new UserException("User doesn't exist")
-                );
+                .orElse(null);
     }
 
     @Override
     public User getUserById(int id) {
         return userDao
                 .findById(id)
-                .orElseThrow(
-                        () -> new UserException("User doesn't exist")
-                );
+                .orElse(null);
     }
 }

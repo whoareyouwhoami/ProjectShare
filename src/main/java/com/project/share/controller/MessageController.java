@@ -1,12 +1,11 @@
 package com.project.share.controller;
 
-import com.project.share.model.ChatMessage;
-import com.project.share.model.ChatMessageDetail;
-import com.project.share.model.Project;
-import com.project.share.model.User;
+import com.project.share.model.*;
 import com.project.share.service.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -25,9 +24,6 @@ import java.util.Set;
 @Controller
 public class MessageController {
     @Autowired
-    private KafkaService kafkaService;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
@@ -38,6 +34,25 @@ public class MessageController {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private RedisMessageSubscribe redisMessageSubscribe;
+
+    @Autowired
+    private RedisMessagePublish redisMessagePublish;
+
+    @Autowired
+    private MessageChatService messageChatService;
+
+
+
+    private final RedisMessageListenerContainer redisMessageListenerContainer;
+
+    public MessageController(RedisMessageListenerContainer redisMessageListenerContainer) {
+        this.redisMessageListenerContainer = redisMessageListenerContainer;
+    }
+
+    private final Map<String, ChannelTopic> channelMap = new HashMap<>();
 
     @GetMapping("/messages")
     public ModelAndView messageHome(Principal principal) {
@@ -93,12 +108,19 @@ public class MessageController {
         mv.addObject("projectInfo", projectID);
         mv.addObject("showMessageList", true);
 
+        // Redis pub/sub
+        String key = "message:" + messageID;
+        ChannelTopic channel = new ChannelTopic(key);
+        if(!channelMap.containsKey(key)) {
+            redisMessageListenerContainer.addMessageListener(redisMessageSubscribe, channel);
+            channelMap.put(key, channel);
+        }
+
         // Retrieve any old messages from DB
         //
 
         // Retrieve any recent messages from Redis
-        String key = "message:" + messageID;
-        Set<ChatMessage> recentMessageList = redisService.getMessageList(key);
+        Set<ChatMessage> recentMessageList = redisService.getRecentMessages(key);
         if(!recentMessageList.isEmpty()) {
             mv.addObject("messages", recentMessageList);
         } else {
@@ -112,7 +134,6 @@ public class MessageController {
     public String accessFromProjectDetail(@PathVariable("pid") int pid, Principal principal) {
         Project project = projectService.getProject(pid);
         int userId = userService.getUserByEmail(principal.getName()).getId();
-
         // Find message ID -> Creates message ID if it is not present in DB
         String messageID;
         try {
@@ -122,6 +143,18 @@ public class MessageController {
             return "redirect:/project/view/" + pid;
         }
         return "redirect:/messages/" + messageID;
+
+
+        // User user = userService.getUserByEmail(principal.getName());
+        // if(user.getId() == project.getOwner().getId())
+        //     return "redirect:/project/view/" + pid;
+        //
+        // MessageChat message = messageChatService.getMessageChat(project, user);
+        // if(message == null) {
+        //     // create new message
+        //     message = messageChatService.addMessage(project, user);
+        // }
+        // return "redirect:/messages/" + message.getId();
     }
 
 
@@ -140,7 +173,11 @@ public class MessageController {
             return;
         }
 
-        ChatMessage m = new ChatMessage(chatId, principal.getName(), message.getToUser(), message.getContent(), LocalDateTime.now(), message.getProjectId(), message.getRoomNumber());
-        kafkaService.send("topicMessage", m);
+        ChatMessage chatMessage = new ChatMessage(chatId, principal.getName(), message.getToUser(), message.getContent(), LocalDateTime.now(), message.getProjectId(), message.getRoomNumber());
+        String key = "message:" + roomNumber;
+        if(channelMap.containsKey(key)) {
+            System.out.println("Channel: " + channelMap.get(key).getTopic());
+            redisMessagePublish.publish(channelMap.get(key), chatMessage);
+        }
     }
 }

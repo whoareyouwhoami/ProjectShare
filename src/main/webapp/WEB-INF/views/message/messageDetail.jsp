@@ -54,7 +54,8 @@
                     </div>
                     <hr>
                     <div>
-                        <span id="to"><b>Sending to: ${authorInfo.email}</span>
+                        <span>Sending to: </span>
+                        <span id="to"><b>${authorInfo.email}</b></span>
                         <div>
                             <label for="msg"></label><input type="text" id="msg" placeholder="Send message to ${authorInfo.email}" />
                             <input type="hidden" id="pid" value="${projectInfo}" />

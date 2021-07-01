@@ -20,7 +20,7 @@ function webConnect() {
         url = url.replace(/^[0-9]+\//, "");
 
         sessionId = url;
-
+        console.log("CURRENT SESSION: " + url);
         client.subscribe("/secured/user/queue/specific-user" + "-user" + sessionId, function(out) {
            console.log("INFO: SUBSCRIBE");
 
@@ -34,6 +34,7 @@ function webConnect() {
 }
 
 function sendMessage() {
+    console.log("SENDING MESSAGE...");
     let today = new Date();
     let to = document.getElementById("to").innerText;
     let text = document.getElementById("msg").value.trim();
@@ -47,8 +48,6 @@ function sendMessage() {
         "roomNumber": mid,
         "time": t
     }
-
-    console.log("Stomp status: " + isStomp);
 
     if (text && isStomp) {
         socket.send("/secured/room", {}, JSON.stringify(msg));

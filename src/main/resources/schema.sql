@@ -88,3 +88,65 @@ CREATE TABLE ChatMessage (
   PRIMARY KEY (id),
   CONSTRAINT fk_message_id FOREIGN KEY (messageId) REFERENCES ChatMessageDetail (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
+CREATE TABLE MessageChat (
+  id INT NOT NULL AUTO_INCREMENT,
+  project_id INT,
+  user_id INT,
+  name VARCHAR(255),
+  emptyMessage BOOLEAN DEFAULT 0,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (id),
+  CONSTRAINT fk_message_chat_project_id FOREIGN KEY (project_id) REFERENCES Project (id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT fk_message_chat_user_id FOREIGN KEY (user_id) REFERENCES Project (id) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- CHANGE content TYPE LATER
+CREATE TABLE MessageDetail (
+  id INT NOT NULL AUTO_INCREMENT,
+  message_id INT NOT NULL,
+  sender_id INT,
+  content VARCHAR(255),
+  sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (id),
+  CONSTRAINT fk_message_detail_message_id FOREIGN KEY (message_id) REFERENCES MessageChat (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_message_detail_sender_id FOREIGN KEY (sender_id) REFERENCES User (id) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE MessageProject (
+  id INT NOT NULL AUTO_INCREMENT,
+  project_id INT NOT NULL,
+  name VARCHAR(255),
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY(id),
+  CONSTRAINT fk_message_project_project_id FOREIGN KEY (project_id) REFERENCES Project (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CHANGE content TYPE LATER
+CREATE TABLE MessageProjectDetail (
+  id INT NOT NULL AUTO_INCREMENT,
+  message_project_id INT NOT NULL,
+  sender_id INT,
+  content VARCHAR(255),
+  sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (id),
+  CONSTRAINT fk_message_project_detail_message_project_id FOREIGN KEY (message_project_id) REFERENCES MessageProject (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_message_project_detail_sender_id FOREIGN KEY (sender_id) REFERENCES User (id) ON DELETE SET NULL ON UPDATE CASCADE  
+);
+
+
+CREATE TABLE MessageProjectUser (
+  id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  message_project_id INT NOT NULL,
+  joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (id),
+  CONSTRAINT fk_message_project_user_user_id FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_message_project_user_message_project_id FOREIGN KEY (message_project_id) REFERENCES MessageProject (id) ON DELETE CASCADE ON UPDATE CASCADE
+);

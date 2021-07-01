@@ -22,16 +22,23 @@ public class KafkaMessageListener {
     private ProjectService projectService;
 
     // Message
-    @KafkaListener(topics = "topicMessage", groupId = "groupMessage", containerFactory = "listenerFactoryMessaging")
-    public void listenMessaging(ChatMessage message) {
-        simpMessagingTemplate.convertAndSendToUser(message.getToUser(), "/secured/user/queue/specific-user", message);
-    }
+    // @KafkaListener(topics = "topicMessage", groupId = "groupMessage", containerFactory = "listenerFactoryMessaging")
+    // public void listenMessaging(ChatMessage message) {
+    //     simpMessagingTemplate.convertAndSendToUser(message.getToUser(), "/secured/user/queue/specific-user", message);
+    // }
 
     // Redis
-    @KafkaListener(topics = "topicMessage", groupId = "groupRedis", containerFactory = "listenerFactoryRedis")
-    public void listenRedis(ChatMessage message) {
-        redisService.saveMessage(message);
-    }
+    // @KafkaListener(topics = "topicMessage", groupId = "groupRedis", containerFactory = "listenerFactoryRedis")
+    // public void listenRedis(ChatMessage message) {
+    //     System.out.println("GOING TO SLEEP...");
+    //     try {
+    //         Thread.sleep(5000);
+    //     } catch (InterruptedException e) {
+    //         e.printStackTrace();
+    //     }
+    //     System.out.println("WAKE UP!");
+    //     // redisService.saveMessage(message);
+    // }
 
     @KafkaListener(topics = "topicRediSearch", groupId = "groupRedis", containerFactory = "listenerFactoryRediSearch")
     public void listenRediSearch(Project project) {

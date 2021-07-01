@@ -1,12 +1,10 @@
 package com.project.share.controller;
 
 import com.project.share.exception.ProjectException;
+import com.project.share.model.MessageProject;
 import com.project.share.model.Project;
 import com.project.share.model.User;
-import com.project.share.service.KafkaService;
-import com.project.share.service.ProjectService;
-import com.project.share.service.RedisService;
-import com.project.share.service.UserService;
+import com.project.share.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +40,12 @@ public class ProjectController {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private MessageProjectService messageProjectService;
+
+    @Autowired
+    private MessageChatService messageChatService;
+
     @GetMapping(path = {"", "/"})
     public ModelAndView projectHome() {
         ModelAndView mv = new ModelAndView();
@@ -70,10 +74,10 @@ public class ProjectController {
         }
 
         // Success -> Set user
+        User user = userService.getUserByEmail(principal.getName());
         Set<User> userSet = new HashSet<>();
-        User u = userService.getUserByEmail(principal.getName());
-        userSet.add(u);
-        project.setOwner(u);
+        userSet.add(user);
+        project.setOwner(user);
         project.setUser(userSet);
 
         // Save project
@@ -82,6 +86,13 @@ public class ProjectController {
         mv.setViewName("redirect:/project/view/" + project.getId());
 
         savedProject.setOwnerName(savedProject.getOwner().getFirstName() + " " + savedProject.getOwner().getLastName());
+
+        /*
+         * - CREATE MESSAGE ROOM FOR PROJECT
+         * - ADD CURRENT USER TO MESSAGE GROUP
+         */
+        MessageProject messageProject = messageProjectService.createMessageProject(savedProject);
+        messageProjectService.addMessageProjectUser(user, messageProject);
 
         // kafkaService.send("topicES", savedProject);
         kafkaService.send("topicRediSearch", project);
@@ -103,40 +114,27 @@ public class ProjectController {
     }
 
     @GetMapping("/view/{pid}")
-    public ModelAndView projectViewDetail(@PathVariable("pid") int pid, Model model) {
+    public ModelAndView projectViewDetail(@PathVariable("pid") int pid, Model model, Principal principal) {
         ModelAndView mv = new ModelAndView();
         mv.setViewName("project/projectView");
 
-        Project project = null;
-        try {
-            project = (Project) model.getAttribute("proj_detail");
-            System.out.println(project.getTitle());
-        } catch(NullPointerException e) {
+        Project project = (Project) model.getAttribute("proj_detail");
+        if(project == null) {
             log.info("Retrieving project detail");
-            try {
-                project = projectService.getProject(pid);
-                System.out.println(project.getTitle());
-            } catch (ProjectException pe) {
-                log.warn("Invalid project ID");
-                // return mv;
-            }
+            project = projectService.getProject(pid);
         }
-
-        if(project != null) {
-            mv.addObject("p_detail", project);
-        }
+        mv.addObject("p_detail", project);
         return mv;
     }
 
     @GetMapping("/update/{pid}")
-    public ModelAndView projectUpdate(@PathVariable("pid") int pid, @ModelAttribute("ProjectForm") Project project, Principal principal) {
-        try {
-            Project p = projectService.getProject(pid);
-            if(p.getOwner().getEmail().equals(principal.getName()))
-                return new ModelAndView("project/projectUpload", "ProjectForm", p);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+    public ModelAndView projectUpdate(@PathVariable("pid") int pid, Principal principal) {
+        Project project = projectService.getProject(pid);
+        if(project == null) // Check if project exist
+            return new ModelAndView("project/projectView");
+
+        if(project.getOwner().getEmail().equals(principal.getName())) // Check if the project belongs to user
+            return new ModelAndView("project/projectUpload", "ProjectForm", project);
 
         log.info("FAIL UPDATE - Invalid user");
         return new ModelAndView("project/projectView");
@@ -147,22 +145,19 @@ public class ProjectController {
         ModelAndView mv = new ModelAndView();
         mv.setViewName("project/projectUpload");
 
-        // Validate owner
         Project projectPrev = projectService.getProject(pid);
-        if(!projectPrev.getOwner().getEmail().equals(principal.getName())) {
+        if(!projectPrev.getOwner().getEmail().equals(principal.getName())) { // Validate owner
             log.info("FAIL UPDATE - Invalid user");
             return new ModelAndView("project/projectView");
         }
 
-        // Check error
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { // Check error
             log.error("Project upload binding form error");
             mv.addObject("ProjectForm", project);
             return mv;
         }
 
-        // Update project
-        Project savedProject = projectService.updateProject(projectPrev, project);
+        Project savedProject = projectService.updateProject(projectPrev, project); // Update project
         if(savedProject == null) {
             log.error("New starting date cannot be before original starting date");
             mv.addObject("ProjectForm", project);

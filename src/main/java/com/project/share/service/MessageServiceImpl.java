@@ -37,7 +37,6 @@ public class MessageServiceImpl implements MessageService {
             ChatMessageDetail messageDetail = messageDetailDao.findByUserOneAndUserTwoOrUserTwoAndUserOneAndProjectId(userId, projectOwner, projectOwner, userId, projectId);
             messageId = messageDetail.getRoomNumber();
         } catch (NullPointerException e) {
-            System.out.println("Creating new Message ID");
             messageId = createMessageId();
 
             ChatMessageDetail detail = new ChatMessageDetail();

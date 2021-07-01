@@ -26,19 +26,6 @@ public class StarterController {
     @Autowired
     private UserService userService;
 
-    // @GetMapping(value = "/login")
-    // public String getLogin() throws Exception {
-    //     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    //
-    //     if (!(auth instanceof AnonymousAuthenticationToken)) {
-    //         User loggedInUser = userService.findByEmail(auth.getName())
-    //                 .orElseThrow(Exception::new);
-    //         /* The user is logged in :) */
-    //         return "redirect:/user/" + loggedInUser.getUserId();
-    //     }
-    //     return "login";
-    // }
-
     @RequestMapping(value = {"/", "/login"}, method = {RequestMethod.GET, RequestMethod.POST})
     public String loginProcess() {
         return "/starter/login";
@@ -61,9 +48,8 @@ public class StarterController {
         }
 
         try {
-            String pw = user.getPassword();
             User registerUser = userService.userAdd(user);
-            userService.authenticateLogin(registerUser.getEmail(), pw);
+            userService.authenticateLogin(registerUser.getEmail(), user.getPassword());
             mv.setViewName("redirect:/home");
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,9 +62,9 @@ public class StarterController {
 
     @GetMapping("/logout")
     public String logoutPage(HttpServletRequest request, HttpServletResponse response, Principal principal) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null){
-            new SecurityContextLogoutHandler().logout(request, response, auth);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null){
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
             log.info("Logged out user: " + principal.getName());
         }
         return "redirect:redirect:/login?logout=true";

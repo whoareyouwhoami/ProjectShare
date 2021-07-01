@@ -20,8 +20,15 @@ public class ProjectDateDifferenceValidator implements ConstraintValidator<Valid
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         LocalDate start = (LocalDate) new BeanWrapperImpl(value).getPropertyValue(dateStart);
         LocalDate end = (LocalDate) new BeanWrapperImpl(value).getPropertyValue(dateEnd);
-        LocalDate dateCurrent = LocalDate.now();
+        if(start == null) {
+            context.buildConstraintViolationWithTemplate("Please enter starting date").addPropertyNode("dateStart").addConstraintViolation();
+            if(end == null) {
+                context.buildConstraintViolationWithTemplate("Please enter ending date").addPropertyNode("dateEnd").addConstraintViolation();
+            }
+            return false;
+        }
 
+        LocalDate dateCurrent = LocalDate.now();
         if(start.isBefore(dateCurrent)) {
             String dateCurrentString = dateCurrent.toString();
             context.buildConstraintViolationWithTemplate("Project should begin after " + dateCurrentString).addPropertyNode("dateStart").addConstraintViolation();

@@ -28,7 +28,7 @@ import java.util.Set;
 public class RedisServiceImpl implements RedisService {
     static final Logger log = LoggerFactory.getLogger(ProjectController.class);
 
-    @Resource(name="redisTemplate")
+    @Resource(name="redisChatMessageTemplate")
     private ZSetOperations<String, ChatMessage> zSetOperations;
 
     @Resource(name="redisTemplateString")
@@ -40,19 +40,10 @@ public class RedisServiceImpl implements RedisService {
     @Autowired
     private StatefulRediSearchConnection<String, String> searchConnection;
 
-    public RedisServiceImpl() {
-    }
-
     @Override
-    public Set<ChatMessage> getMessageList(String key) {
+    public Set<ChatMessage> getRecentMessages(String key) {
+        // return redisTemplate.boundZSetOps(key).range(0, -1);
         return zSetOperations.range(key, 0, -1);
-    }
-
-    @Override
-    public void saveMessage(ChatMessage message) {
-        String key = "message:" + message.getRoomNumber();
-        Timestamp sentTime = Timestamp.valueOf(message.getSentTime());
-        zSetOperations.add(key, message, sentTime.getTime());
     }
 
     @Override

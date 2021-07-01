@@ -12,10 +12,6 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.project.share.validate.ValidateProjectDateDifference;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.Reference;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -47,37 +43,34 @@ public class Project {
     // @Positive
     private int member;
 
-    // @NotEmpty(message = "Enter starting date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateStart;
 
-    // @NotEmpty(message = "Enter ending date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateEnd;
 
     @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dateUpload;
 
     @UpdateTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dateModified;
 
     @Transient
     // @Field(type = FieldType.Nested, includeInParent = true)
     private String ownerName;
 
-    // @Reference
     @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL)
     private User owner;
@@ -88,11 +81,17 @@ public class Project {
     @Column(columnDefinition="BIT(1) DEFAULT 0")
     private boolean status;
 
-    // @Reference
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "ProjectUser", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> user;
+
+    /*
+     * THIS MAY NOT BE NECESSARY SINCE UNIDIRECTIONAL
+     *
+     */
+    @OneToOne(mappedBy = "project")
+    private MessageProject messageProjectSet;
 
     public Project() {}
 
@@ -206,5 +205,13 @@ public class Project {
 
     public void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
+    }
+
+    public MessageProject getMessageProjectSet() {
+        return messageProjectSet;
+    }
+
+    public void setMessageProjectSet(MessageProject messageProjectSet) {
+        this.messageProjectSet = messageProjectSet;
     }
 }

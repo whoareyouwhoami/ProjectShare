@@ -17,4 +17,5 @@ public interface MessageService {
     // Get ChatMessageDetail ID
     int getChatId(long roomNumber, int projectId);
 
+
 }
