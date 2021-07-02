@@ -12,15 +12,17 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@IdClass(MessageProjectUserKey.class)
 public class MessageProjectUser {
-    @Id
+    @EmbeddedId
+    private MessageProjectUserKey id;
+
     @ManyToOne
+    @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Id
     @ManyToOne
+    @MapsId("messageProjectId")
     @JoinColumn(name = "message_project_id")
     private MessageProject messageProject;
 
@@ -29,6 +31,14 @@ public class MessageProjectUser {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime joined;
+
+    public MessageProjectUserKey getId() {
+        return id;
+    }
+
+    public void setId(MessageProjectUserKey id) {
+        this.id = id;
+    }
 
     public User getUser() {
         return user;

@@ -14,5 +14,8 @@ public interface MessageChatService {
 
     void saveMessageDetail(MessageDetail detail);
 
-    boolean checkMessageUserExist(Project project, User user);
+    boolean checkMessageUserExistByProject(Project project, User user);
+
+    /* MIGHT NOT BE NECESSARY */
+    boolean checkMessageuserExistByMessageId(int messageId, User accessUser);
 }

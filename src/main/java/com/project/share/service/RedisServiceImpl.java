@@ -2,6 +2,7 @@ package com.project.share.service;
 
 import com.project.share.controller.ProjectController;
 import com.project.share.model.ChatMessage;
+import com.project.share.model.MessageDetail;
 import com.project.share.model.Project;
 import com.project.share.redis.RedisDao;
 import com.redislabs.lettusearch.Document;
@@ -28,8 +29,8 @@ import java.util.Set;
 public class RedisServiceImpl implements RedisService {
     static final Logger log = LoggerFactory.getLogger(ProjectController.class);
 
-    @Resource(name="redisChatMessageTemplate")
-    private ZSetOperations<String, ChatMessage> zSetOperations;
+    @Resource(name="redisMessageTemplate")
+    private ZSetOperations<String, MessageDetail> zSetOperations;
 
     @Resource(name="redisTemplateString")
     private HashOperations<String, Object, Object> hashOperations;
@@ -41,7 +42,7 @@ public class RedisServiceImpl implements RedisService {
     private StatefulRediSearchConnection<String, String> searchConnection;
 
     @Override
-    public Set<ChatMessage> getRecentMessages(String key) {
+    public Set<MessageDetail> getRecentMessages(String key) {
         // return redisTemplate.boundZSetOps(key).range(0, -1);
         return zSetOperations.range(key, 0, -1);
     }

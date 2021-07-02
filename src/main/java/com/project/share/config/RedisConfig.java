@@ -1,6 +1,7 @@
 package com.project.share.config;
 
 import com.project.share.model.ChatMessage;
+import com.project.share.model.MessageDetail;
 import com.project.share.model.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -61,8 +62,8 @@ public class RedisConfig {
     // }
 
     @Bean
-    public RedisTemplate<String, ChatMessage> redisChatMessageTemplate() {
-        RedisTemplate<String, ChatMessage> redisTemplate = new RedisTemplate<>();
+    public RedisTemplate<String, MessageDetail> redisMessageTemplate() {
+        RedisTemplate<String, MessageDetail> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());

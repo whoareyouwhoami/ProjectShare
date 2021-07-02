@@ -84,10 +84,7 @@ public class ProjectController {
 
         savedProject.setOwnerName(savedProject.getOwner().getFirstName() + " " + savedProject.getOwner().getLastName());
 
-        /*
-         * - CREATE MESSAGE ROOM FOR PROJECT
-         * - ADD CURRENT USER TO MESSAGE GROUP
-         */
+        /* CREATES MESSAGE GROUP FOR PROJECT */
         MessageProject messageProject = messageProjectService.createMessageProject(savedProject);
         messageProjectService.addMessageProjectUser(user, messageProject);
 

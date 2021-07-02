@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class MessageChatServiceImpl implements MessageChatService {
-
     @Autowired
     private MessageChatDao messageChatDao;
 
@@ -42,8 +41,19 @@ public class MessageChatServiceImpl implements MessageChatService {
     }
 
     @Override
-    public boolean checkMessageUserExist(Project project, User user) {
+    public boolean checkMessageUserExistByProject(Project project, User user) {
         MessageChat result = messageChatDao.findByProjectAndUser(project, user);
         return result != null;
+    }
+
+    @Override
+    public boolean checkMessageuserExistByMessageId(int messageId, User accessUser) {
+        MessageChat result = messageChatDao.findById(messageId).orElse(null);
+        if(result != null) {
+            if(result.getUser().getId() == accessUser.getId() || result.getProject().getOwner().getId() == accessUser.getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
