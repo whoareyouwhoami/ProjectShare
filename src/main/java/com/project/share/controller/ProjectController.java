@@ -35,9 +35,6 @@ public class ProjectController {
     private UserService userService;
 
     @Autowired
-    private KafkaService kafkaService;
-
-    @Autowired
     private RedisService redisService;
 
     @Autowired
@@ -94,8 +91,7 @@ public class ProjectController {
         MessageProject messageProject = messageProjectService.createMessageProject(savedProject);
         messageProjectService.addMessageProjectUser(user, messageProject);
 
-        // kafkaService.send("topicES", savedProject);
-        kafkaService.send("topicRediSearch", project);
+//        kafkaService.send("topicRediSearch", project);
 
         log.info("SUCCESS UPLOAD");
         return mv;
