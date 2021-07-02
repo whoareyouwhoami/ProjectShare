@@ -94,6 +94,17 @@ CREATE TABLE MessageChat (
   CONSTRAINT fk_message_chat_user_id FOREIGN KEY (user_id) REFERENCES Project (id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
+
+CREATE TABLE MessageChatUser (
+  project_id INT,
+  user_id INT,
+  messageRoom BIGINT DEFAULT NULL UNIQUE,
+
+  PRIMARY KEY(project_id, user_id),
+  CONSTRAINT fk_message_chat_user_project_id FOREIGN KEY (project_id) REFERENCES Project (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_message_chat_user_user_id FOREIGN KEY (user_id) REFERENCES Project (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- CHANGE content TYPE LATER
 CREATE TABLE MessageDetail (
   id INT NOT NULL AUTO_INCREMENT,
