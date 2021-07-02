@@ -31,15 +31,6 @@ CREATE TABLE UserRole (
   CONSTRAINT fk_user_role_userid FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE UserRole (
-  user_id INT NOT NULL,
-  role_id INT NOT NULL,
-
-  PRIMARY KEY (user_id, role_id),
-  CONSTRAINT fk_user_role_roleid FOREIGN KEY (role_id) REFERENCES Role (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT fk_user_role_userid FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 CREATE TABLE Project (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
