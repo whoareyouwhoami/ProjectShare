@@ -28,11 +28,9 @@ public class MessageChatServiceImpl implements MessageChatService {
 
     @Override
     public MessageChat addMessage(Project project, User user) {
-        MessageChat messageChat = new MessageChat();
-        messageChat.setUser(user);
-        messageChat.setProject(project);
-        messageChat.setName("Let's talk about the project!");
-        return messageChatDao.save(messageChat);
+        return messageChatDao.save(
+                new MessageChat(project, user, "Let's talk about the project!")
+        );
     }
 
     @Override

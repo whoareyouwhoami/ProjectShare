@@ -32,6 +32,15 @@ public class MessageDetail {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime sent;
 
+    public MessageDetail() {}
+
+    public MessageDetail(MessageChat messageChat, User sender, String content, LocalDateTime sent) {
+        this.messageChat = messageChat;
+        this.sender = sender;
+        this.content = content;
+        this.sent = sent;
+    }
+
     public int getId() {
         return id;
     }

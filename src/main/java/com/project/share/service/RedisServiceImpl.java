@@ -30,7 +30,7 @@ public class RedisServiceImpl implements RedisService {
     static final Logger log = LoggerFactory.getLogger(ProjectController.class);
 
     @Resource(name="redisMessageTemplate")
-    private ZSetOperations<String, MessageDetail> zSetOperations;
+    private ZSetOperations<String, Object> zSetOperations;
 
     @Resource(name="redisTemplateString")
     private HashOperations<String, Object, Object> hashOperations;
@@ -42,7 +42,7 @@ public class RedisServiceImpl implements RedisService {
     private StatefulRediSearchConnection<String, String> searchConnection;
 
     @Override
-    public Set<MessageDetail> getRecentMessages(String key) {
+    public Set<Object> getRecentMessages(String key) {
         // return redisTemplate.boundZSetOps(key).range(0, -1);
         return zSetOperations.range(key, 0, -1);
     }

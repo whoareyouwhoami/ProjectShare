@@ -27,12 +27,16 @@ public class MessageProjectServiceImpl implements MessageProjectService {
         messageProject.setProject(project);
         messageProject.setName("Message - " + project.getTitle());
         return messageProjectDao.save(messageProject);
-
     }
 
     @Override
     public MessageProject getMessageProject(Project project) {
         return messageProjectDao.findByProject(project);
+    }
+
+    @Override
+    public MessageProject getMessageProjectById(int id) {
+        return messageProjectDao.findById(id).orElse(null);
     }
 
     @Override

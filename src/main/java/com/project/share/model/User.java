@@ -1,5 +1,6 @@
 package com.project.share.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.share.validate.ValidCheckEmail;
 import com.project.share.validate.ValidCheckPasswordConfirm;
@@ -66,19 +67,19 @@ public class User implements UserDetails {
     @JoinTable(name = "UserRole", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
 
-    @JsonManagedReference
-    @OneToOne(mappedBy = "owner")
-    private Project project;
-    
-    @ManyToMany(mappedBy = "user")
-    private List<Project> projects;
-
     /*
      * =====================================
      * CHANGES MADE FROM THIS POINT
      * =====================================
      */
+    @OneToMany(mappedBy = "author")
+    private Set<Project> projectSet;
+
+
+
+
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private Set<MessageProjectUser> messageProjectUserSet;
 
     /*
@@ -231,32 +232,9 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public List<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(List<Project> projects) {
-        this.projects = projects;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
     }
 
-    public Set<MessageProjectUser> getMessageProjectUserSet() {
-        return messageProjectUserSet;
-    }
-
-    public void setMessageProjectUserSet(Set<MessageProjectUser> messageProjectUserSet) {
-        this.messageProjectUserSet = messageProjectUserSet;
-    }
 }

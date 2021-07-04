@@ -62,22 +62,14 @@ public class RedisConfig {
     // }
 
     @Bean
-    public RedisTemplate<String, MessageDetail> redisMessageTemplate() {
-        RedisTemplate<String, MessageDetail> redisTemplate = new RedisTemplate<>();
+    public RedisTemplate<String, Object> redisMessageTemplate() {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return redisTemplate;
     }
 
-    // @Bean
-    // public RedisTemplate<String, ChatMessage> redisTemplate() {
-    //     RedisTemplate<String, ChatMessage> redisTemplate = new RedisTemplate<>();
-    //     redisTemplate.setConnectionFactory(redisConnectionFactory());
-    //     redisTemplate.setKeySerializer(new StringRedisSerializer());
-    //     redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-    //     return redisTemplate;
-    // }
 
     @Bean
     public RedisTemplate<String, Project> redisTemplateString() {

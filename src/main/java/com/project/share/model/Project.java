@@ -40,56 +40,43 @@ public class Project {
     // @Lob -> longtext
     private String description;
 
-    // @Positive
     private int member;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateStart;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateEnd;
 
     @CreationTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dateUpload;
 
     @UpdateTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dateModified;
-
-    @Transient
-    // @Field(type = FieldType.Nested, includeInParent = true)
-    private String ownerName;
-
-    @JsonBackReference
-    @OneToOne(cascade = CascadeType.ALL)
-    private User owner;
-
-    // @Column(columnDefinition="BIT(1) DEFAULT 0")
-    // private boolean visibility;
 
     @Column(columnDefinition="BIT(1) DEFAULT 0")
     private boolean status;
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "ProjectUser", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> user;
+    @ManyToOne
+    @JoinColumn("author_id")
+    private User author;
 
-    /*
-     * THIS MAY NOT BE NECESSARY SINCE UNIDIRECTIONAL
-     *
-     */
+    // @ManyToMany
+    // private Set<User> groupMembers;
+
+    /* THIS MAY NOT BE NECESSARY SINCE UNIDIRECTIONAL */
     @OneToOne(mappedBy = "project")
     private MessageProject messageProjectSet;
 
@@ -167,22 +154,6 @@ public class Project {
         this.dateModified = dateModified;
     }
 
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
-
-    // public boolean isVisibility() {
-    //     return visibility;
-    // }
-    //
-    // public void setVisibility(boolean visibility) {
-    //     this.visibility = visibility;
-    // }
-
     public boolean isStatus() {
         return status;
     }
@@ -191,20 +162,12 @@ public class Project {
         this.status = status;
     }
 
-    public Set<User> getUser() {
-        return user;
+    public User getAuthor() {
+        return author;
     }
 
-    public void setUser(Set<User> user) {
-        this.user = user;
-    }
-
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public MessageProject getMessageProjectSet() {

@@ -43,6 +43,14 @@ public class MessageChat {
     @OneToMany(mappedBy = "messageChat")
     private Set<MessageDetail> messageDetailSet;
 
+    public MessageChat() {}
+
+    public MessageChat(Project project, User user, String name) {
+        this.project = project;
+        this.user = user;
+        this.name = name;
+    }
+
     public int getId() {
         return id;
     }

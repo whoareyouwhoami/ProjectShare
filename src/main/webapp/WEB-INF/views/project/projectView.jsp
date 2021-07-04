@@ -50,7 +50,7 @@
                         <a href="<c:url value="${contextPath}/project/delete/${p_detail.id}" />">Delete</a>
                     </c:if>
                     <c:if test="${pageContext.request.userPrincipal.name != p_detail.user.iterator().next().email}">
-                        <a href="<c:url value="${contextPath}/messages/p/${p_detail.id}" />">Send message</a>
+                        <a href="<c:url value="${contextPath}/messages/d/${p_detail.id}" />">Send message</a>
                     </c:if>
                 </div>
             </c:if>

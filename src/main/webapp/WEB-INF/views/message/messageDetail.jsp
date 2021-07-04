@@ -54,6 +54,11 @@
                     </div>
                     <hr>
                     <div>
+                        <c:if test="${pageContext.request.userPrincipal.name == authorInfo.email}">
+                            <a href="<c:url value="${contextPath}/messages/p/add/${messageChat.id}" />">Add to a group chat</a>
+                        </c:if>
+                    </div>
+                    <div>
                         <span>Sending to: </span>
                         <span id="to"><b>${authorInfo.email}</b></span>
                         <div>

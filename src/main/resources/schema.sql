@@ -49,12 +49,13 @@ CREATE TABLE Project (
 );
 
 CREATE TABLE ProjectUser (
-  user_id INT NOT NULL,
+  member_id INT NOT NULL,
   project_id INT NOT NULL,
+  joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-  PRIMARY KEY (user_id, project_id),
-  CONSTRAINT fk_user_project_userid FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT fk_user_project_projectid FOREIGN KEY (project_id) REFERENCES Project (id) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (member_id, project_id),
+  CONSTRAINT fk_user_project_member_id FOREIGN KEY (member_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_user_project_project_id FOREIGN KEY (project_id) REFERENCES Project (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE ChatMessageDetail (
