@@ -16,7 +16,7 @@ public class RedisMessagePublishImpl implements RedisMessagePublish {
 
 
     @Override
-    public void publishMessage(ChannelTopic topic, MessageDetail message, MessageStructure messageStructure) {
+    public void publishMessage(ChannelTopic topic, MessageChatDetail message, MessageStructure messageStructure) {
         /* SAVE CHAT IN REDIS */
         String key = "message:m:" + message.getMessageChat().getId();
         Timestamp sentTime = Timestamp.valueOf(message.getSent());

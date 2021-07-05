@@ -11,7 +11,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class MessageDetail {
+public class MessageChatDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -32,9 +32,9 @@ public class MessageDetail {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime sent;
 
-    public MessageDetail() {}
+    public MessageChatDetail() {}
 
-    public MessageDetail(MessageChat messageChat, User sender, String content, LocalDateTime sent) {
+    public MessageChatDetail(MessageChat messageChat, User sender, String content, LocalDateTime sent) {
         this.messageChat = messageChat;
         this.sender = sender;
         this.content = content;

@@ -32,6 +32,13 @@ public class MessageProjectUser {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime joined;
 
+    public MessageProjectUser() {}
+    public MessageProjectUser(MessageProjectUserKey id, User user, MessageProject messageProject) {
+        this.id = id;
+        this.user = user;
+        this.messageProject = messageProject;
+    }
+
     public MessageProjectUserKey getId() {
         return id;
     }

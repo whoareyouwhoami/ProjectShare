@@ -54,15 +54,15 @@
                     </div>
                     <hr>
                     <div>
-                        <c:if test="${pageContext.request.userPrincipal.name == authorInfo.email}">
+                        <c:if test="${pageContext.request.userPrincipal.name == messageChat.project.author.email}">
                             <a href="<c:url value="${contextPath}/messages/p/add/${messageChat.id}" />">Add to a group chat</a>
                         </c:if>
                     </div>
                     <div>
                         <span>Sending to: </span>
-                        <span id="to"><b>${authorInfo.email}</b></span>
+                        <span id="to"><b>${authorEmail}</b></span>
                         <div>
-                            <label for="msg"></label><input type="text" id="msg" placeholder="Send message to ${authorInfo.email}" />
+                            <label for="msg"></label><input type="text" id="msg" placeholder="Send message to ${authorEmail}" />
                             <input type="hidden" id="pid" value="${projectInfo}" />
                             <div>
                                 <button id="btnSend" type="button">Send</button>

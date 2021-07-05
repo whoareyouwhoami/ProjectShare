@@ -69,12 +69,18 @@ public class Project {
     @Column(columnDefinition="BIT(1) DEFAULT 0")
     private boolean status;
 
+    /* AUTHOR OF THE PROJECT */
     @ManyToOne
-    @JoinColumn("author_id")
+    @JoinColumn(name = "author_id")
     private User author;
 
-    // @ManyToMany
-    // private Set<User> groupMembers;
+    /* TO CHECK MEMBERS IN THE PROJECT GROUP */
+    @OneToMany(mappedBy = "project")
+    private Set<ProjectUser> projectUserSet;
+
+    /* CHECK ANY PRIVATE MESSAGE RECEIVED FOR THE PROJECT */
+    @OneToMany(mappedBy = "project")
+    private Set<MessageChat> messageChatSet;
 
     /* THIS MAY NOT BE NECESSARY SINCE UNIDIRECTIONAL */
     @OneToOne(mappedBy = "project")
@@ -168,6 +174,22 @@ public class Project {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public Set<ProjectUser> getProjectUserSet() {
+        return projectUserSet;
+    }
+
+    public void setProjectUserSet(Set<ProjectUser> projectUserSet) {
+        this.projectUserSet = projectUserSet;
+    }
+
+    public Set<MessageChat> getMessageChatSet() {
+        return messageChatSet;
+    }
+
+    public void setMessageChatSet(Set<MessageChat> messageChatSet) {
+        this.messageChatSet = messageChatSet;
     }
 
     public MessageProject getMessageProjectSet() {

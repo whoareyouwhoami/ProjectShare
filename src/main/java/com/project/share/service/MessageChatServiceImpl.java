@@ -1,7 +1,7 @@
 package com.project.share.service;
 
 import com.project.share.dao.MessageChatDao;
-import com.project.share.dao.MessageDetailDao_TEMPO;
+import com.project.share.dao.MessageChatDetailDao;
 import com.project.share.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ public class MessageChatServiceImpl implements MessageChatService {
     private MessageChatDao messageChatDao;
 
     @Autowired
-    private MessageDetailDao_TEMPO messageDetailDao;
+    private MessageChatDetailDao messageChatDetailDao;
 
     @Override
     public MessageChat getMessageById(int messageId) {
@@ -28,30 +28,36 @@ public class MessageChatServiceImpl implements MessageChatService {
 
     @Override
     public MessageChat addMessage(Project project, User user) {
-        return messageChatDao.save(
+        /* SAVE PRIVATE CHAT ROOM */
+        MessageChat messageChat = messageChatDao.save(
                 new MessageChat(project, user, "Let's talk about the project!")
         );
+
+        /* SAVE USERS FOR CHAT MESSAGE */
+//        messageChatUserDao.save(new MessageChatUser(user, messageChat));
+//        messageChatUserDao.save(new MessageChatUser(project.getAuthor(), messageChat));
+        return messageChat;
     }
 
     @Override
-    public void saveMessageDetail(MessageDetail detail) {
-        messageDetailDao.save(detail);
+    public void saveMessageDetail(MessageChatDetail detail) {
+        messageChatDetailDao.save(detail);
     }
 
     @Override
-    public boolean checkMessageUserExistByProject(Project project, User user) {
+    public boolean checkMessageUserExist(Project project, User user) {
         MessageChat result = messageChatDao.findByProjectAndUser(project, user);
         return result != null;
     }
 
     @Override
-    public boolean checkMessageuserExistByMessageId(int messageId, User accessUser) {
+    public boolean checkMessageUserExistByMessageId(int messageId, User accessUser) {
         MessageChat result = messageChatDao.findById(messageId).orElse(null);
-        if(result != null) {
-            if(result.getUser().getId() == accessUser.getId() || result.getProject().getOwner().getId() == accessUser.getId()) {
-                return true;
-            }
-        }
+//        if(result != null) {
+//            if(result.getUser().getId() == accessUser.getId() || result.getProject().getAuthor().getId() == accessUser.getId()) {
+//                return true;
+//            }
+//        }
         return false;
     }
 }

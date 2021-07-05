@@ -45,11 +45,11 @@
                 </div>
 
                 <div>
-                    <c:if test="${pageContext.request.userPrincipal.name == p_detail.user.iterator().next().email}">
+                    <c:if test="${pageContext.request.userPrincipal.name == p_detail.author.email}">
                         <a href="<c:url value="${contextPath}/project/update/${p_detail.id}" />">Update</a>
                         <a href="<c:url value="${contextPath}/project/delete/${p_detail.id}" />">Delete</a>
                     </c:if>
-                    <c:if test="${pageContext.request.userPrincipal.name != p_detail.user.iterator().next().email}">
+                    <c:if test="${pageContext.request.userPrincipal.name != p_detail.author.email}">
                         <a href="<c:url value="${contextPath}/messages/d/${p_detail.id}" />">Send message</a>
                     </c:if>
                 </div>

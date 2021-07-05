@@ -1,8 +1,6 @@
 package com.project.share.service;
 
 import com.project.share.controller.ProjectController;
-import com.project.share.model.ChatMessage;
-import com.project.share.model.MessageDetail;
 import com.project.share.model.Project;
 import com.project.share.redis.RedisDao;
 import com.redislabs.lettusearch.Document;
@@ -13,12 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.sql.Timestamp;
 
 import java.util.ArrayList;
 import java.util.List;

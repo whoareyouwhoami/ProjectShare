@@ -1,10 +1,7 @@
 package com.project.share.service;
 
 import com.project.share.dao.ProjectDao;
-// import com.project.share.es.ProjectSearchDao;
-import com.project.share.exception.ProjectException;
 import com.project.share.model.Project;
-import com.project.share.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,16 +23,6 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Project> getAllProject() {
-        return projectDao.findAll();
-    }
-
-    @Override
-    public List<Project> getAllUserProject(User user) {
-        return projectDao.findAllByUser(user);
-    }
-
-    @Override
     public Project saveProject(Project project) {
         return projectDao.save(project);
     }
@@ -51,6 +38,11 @@ public class ProjectServiceImpl implements ProjectService {
         prev.setDateStart(current.getDateStart());
         prev.setDateEnd(current.getDateEnd());
         return projectDao.save(prev);
+    }
+
+    @Override
+    public List<Project> getAllProject() {
+        return projectDao.findAll();
     }
 
     @Override

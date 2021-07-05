@@ -28,17 +28,16 @@
 
             <div style="overflow: auto; height: 700px; width: 25%; margin-top: 15px;">
 
-                <c:forEach var="tempMessageList" items="${messageList}" varStatus="status">
-                    <div style="padding: 5px; border-bottom: 1px solid grey;">
-                        <small> Message ID: ${tempMessageList.key}</small>
 
-                        <c:forEach var="m" items="${tempMessageList.value}" varStatus="status">
-                            <div style="margin-bottom: 3px">
-                                <p style="margin: 3px"><b>@${m.value.firstName}</b></p>
-                                <p style="margin: 3px;">Project - ${m.key.title}</p>
-                                <a href="${contextPath}/messages/${tempMessageList.key}">Send message</a>
-                            </div>
-                        </c:forEach>
+                <c:forEach var="message" items="${messageList}" varStatus="status">
+                    <div style="padding: 5px; border-bottom: 1px solid grey;">
+                        <small> Message ID: ${message.id}</small>
+
+                        <div style="margin-bottom: 3px">
+                            <p style="margin: 3px"><b>@${message.project.author.firstName}</b></p>
+                            <p style="margin: 3px;">Project - ${message.project.title}</p>
+                            <a href="${contextPath}/messages/m/${message.id}">Send message</a>
+                        </div>
                     </div>
                 </c:forEach>
 

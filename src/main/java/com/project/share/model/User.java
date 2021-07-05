@@ -72,26 +72,19 @@ public class User implements UserDetails {
      * CHANGES MADE FROM THIS POINT
      * =====================================
      */
+
+    /* GET LIST OF PROJECTS UPLOADED BY THE USER */
     @OneToMany(mappedBy = "author")
     private Set<Project> projectSet;
 
-
-
-
+    /* GET LIST OF PROJECT MESSAGES THAT THE USER IS INVOLVED */
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private Set<MessageProjectUser> messageProjectUserSet;
 
-    /*
-     * THIS MAY NOT BE NECESSARY SINCE UNIDIRECTIONAL
-     *
-     * @OneToMany(mappedBy = "sender")
-     * private Set<MessageDetail> messageDetailSet;
-     *
-     * @OneToMany(mappedBy = "sender")
-     * private Set<MessageProjectDetail> messageProjecrtDetailSet;
-     */
-
+    /* GET LIST OF PRIVATE MESSAGES BETWEEN USER AND PROJECT AUTHOR */
+    @OneToMany(mappedBy = "user")
+    private Set<MessageChat> messageChatSet;
 
     public User() {
     }
@@ -237,4 +230,27 @@ public class User implements UserDetails {
         return roles;
     }
 
+    public Set<Project> getProjectSet() {
+        return projectSet;
+    }
+
+    public void setProjectSet(Set<Project> projectSet) {
+        this.projectSet = projectSet;
+    }
+
+    public Set<MessageProjectUser> getMessageProjectUserSet() {
+        return messageProjectUserSet;
+    }
+
+    public void setMessageProjectUserSet(Set<MessageProjectUser> messageProjectUserSet) {
+        this.messageProjectUserSet = messageProjectUserSet;
+    }
+
+    public Set<MessageChat> getMessageChatSet() {
+        return messageChatSet;
+    }
+
+    public void setMessageChatSet(Set<MessageChat> messageChatSet) {
+        this.messageChatSet = messageChatSet;
+    }
 }

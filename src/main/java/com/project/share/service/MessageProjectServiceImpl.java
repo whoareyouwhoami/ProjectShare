@@ -45,11 +45,11 @@ public class MessageProjectServiceImpl implements MessageProjectService {
         key.setMessageProjectId(messageProject.getId());
         key.setUserId(user.getId());
 
-        MessageProjectUser messageProjectUser = new MessageProjectUser();
-        messageProjectUser.setId(key);
-        messageProjectUser.setUser(user);
-        messageProjectUser.setMessageProject(messageProject);
-        messageProjectUserDao.save(messageProjectUser);
+        MessageProjectUser messageProjectUser = messageProjectUserDao.findById(key);
+        if(messageProjectUser == null) {
+            messageProjectUser = new MessageProjectUser(key, user, messageProject);
+            messageProjectUserDao.save(messageProjectUser);
+        }
     }
 
     @Override

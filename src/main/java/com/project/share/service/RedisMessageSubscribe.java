@@ -1,10 +1,6 @@
 package com.project.share.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.project.share.model.ChatMessage;
-import com.project.share.model.MessageDetail;
-import com.project.share.model.MessageProjectDetail;
 import com.project.share.model.MessageStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;

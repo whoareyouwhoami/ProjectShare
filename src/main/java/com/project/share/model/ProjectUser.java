@@ -18,12 +18,12 @@ public class ProjectUser {
 
     @ManyToOne
     @MapsId("userId")
-    @JoinColumn("member_id")
+    @JoinColumn(name = "member_id")
     private User user;
 
     @ManyToOne
     @MapsId("projectId")
-    @JoinColumn("project_id")
+    @JoinColumn(name = "project_id")
     private Project project;
 
     @CreationTimestamp

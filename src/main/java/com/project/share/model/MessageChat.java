@@ -41,7 +41,7 @@ public class MessageChat {
     private LocalDateTime created;
 
     @OneToMany(mappedBy = "messageChat")
-    private Set<MessageDetail> messageDetailSet;
+    private Set<MessageChatDetail> messageChatDetailSet;
 
     public MessageChat() {}
 
@@ -99,11 +99,11 @@ public class MessageChat {
         this.created = created;
     }
 
-    public Set<MessageDetail> getMessageDetailSet() {
-        return messageDetailSet;
+    public Set<MessageChatDetail> getMessageDetailSet() {
+        return messageChatDetailSet;
     }
 
-    public void setMessageDetailSet(Set<MessageDetail> messageDetailSet) {
-        this.messageDetailSet = messageDetailSet;
+    public void setMessageDetailSet(Set<MessageChatDetail> messageChatDetailSet) {
+        this.messageChatDetailSet = messageChatDetailSet;
     }
 }
