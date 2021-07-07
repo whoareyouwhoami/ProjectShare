@@ -20,20 +20,20 @@ public class RedisMessagePublishImpl implements RedisMessagePublish {
         /* SAVE CHAT IN REDIS */
         String key = "message:m:" + message.getMessageChat().getId();
         Timestamp sentTime = Timestamp.valueOf(message.getSent());
-        // redisTemplate.boundZSetOps(key).add(message, sentTime.getTime());
+         redisTemplate.boundZSetOps(key).add(message, sentTime.getTime());
 
         /* PUSH TO REDIS PUB/SUB */
         redisTemplate.convertAndSend(topic.getTopic(), messageStructure);
     }
 
     @Override
-    public void publishProjectMessage(ChannelTopic topic, MessageProjectDetail message) {
+    public void publishProjectMessage(ChannelTopic topic, MessageProjectDetail message, MessageStructure messageStructure) {
         /* SAVE CHAT IN REDIS */
         String key = "message:p:" + message.getMessageProject().getId();
         Timestamp sentTime = Timestamp.valueOf(message.getSent());
-        redisTemplate.boundZSetOps(key).add(message, sentTime.getTime());
+//        redisTemplate.boundZSetOps(key).add(message, sentTime.getTime());
 
         /* PUSH TO REDIS PUB/SUB */
-        redisTemplate.convertAndSend(topic.getTopic(), message);
+        redisTemplate.convertAndSend(topic.getTopic(), messageStructure);
     }
 }

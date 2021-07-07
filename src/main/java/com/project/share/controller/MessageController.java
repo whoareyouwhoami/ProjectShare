@@ -162,6 +162,7 @@ public class MessageController {
         // ...
         // ...
 
+        mv.addObject("showMessageList", true);
         mv.setViewName("message/messageDetail");
         return mv;
     }
@@ -215,7 +216,7 @@ public class MessageController {
             MessageProject messageProject = messageProjectService.getMessageProjectById(message.getMessage());
             MessageProjectDetail messageProjectDetail = new MessageProjectDetail(messageProject, currentUser, message.getContent(), LocalDateTime.now());
 
-            redisMessagePublish.publishProjectMessage(channelMap.get(key), messageProjectDetail);
+            redisMessagePublish.publishProjectMessage(channelMap.get(key), messageProjectDetail, message);
         } else {
             System.out.println("ERROR...");
         }

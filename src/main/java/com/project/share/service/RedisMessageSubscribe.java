@@ -31,7 +31,8 @@ public class RedisMessageSubscribe implements MessageListener {
             if(messageStructure.getType().equals("m")) {
                 messageTemplate.convertAndSendToUser(messageStructure.getReceiver(), "/secured/user/queue/specific-user", messageStructure);
             } else if(messageStructure.getType().equals("p")) {
-                messageTemplate.convertAndSend("/secured/group/queue/specific-group", messageStructure);
+                System.out.println("Sending Group Message");
+                messageTemplate.convertAndSend("/secured/user/queue/group/p." + messageStructure.getMessage(), messageStructure);
             } else {
                 System.out.println("ERROR...");
             }

@@ -63,6 +63,7 @@ public class User implements UserDetails {
 
     private boolean enabled;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "UserRole", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
@@ -74,15 +75,17 @@ public class User implements UserDetails {
      */
 
     /* GET LIST OF PROJECTS UPLOADED BY THE USER */
+    @JsonIgnore
     @OneToMany(mappedBy = "author")
     private Set<Project> projectSet;
 
     /* GET LIST OF PROJECT MESSAGES THAT THE USER IS INVOLVED */
-    @OneToMany(mappedBy = "user")
     @JsonIgnore
+    @OneToMany(mappedBy = "user")
     private Set<MessageProjectUser> messageProjectUserSet;
 
     /* GET LIST OF PRIVATE MESSAGES BETWEEN USER AND PROJECT AUTHOR */
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private Set<MessageChat> messageChatSet;
 
@@ -226,6 +229,7 @@ public class User implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
     }

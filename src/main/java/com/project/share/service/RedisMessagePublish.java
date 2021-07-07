@@ -7,6 +7,6 @@ public interface RedisMessagePublish {
 
     void publishMessage(ChannelTopic topic, MessageChatDetail message, MessageStructure messageStructure);
 
-    void publishProjectMessage(ChannelTopic topic, MessageProjectDetail message);
+    void publishProjectMessage(ChannelTopic topic, MessageProjectDetail message, MessageStructure messageStructure);
 
 }

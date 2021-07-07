@@ -75,14 +75,17 @@ public class Project {
     private User author;
 
     /* TO CHECK MEMBERS IN THE PROJECT GROUP */
+    @JsonIgnore
     @OneToMany(mappedBy = "project")
     private Set<ProjectUser> projectUserSet;
 
     /* CHECK ANY PRIVATE MESSAGE RECEIVED FOR THE PROJECT */
+    @JsonIgnore
     @OneToMany(mappedBy = "project")
     private Set<MessageChat> messageChatSet;
 
     /* THIS MAY NOT BE NECESSARY SINCE UNIDIRECTIONAL */
+    @JsonIgnore
     @OneToOne(mappedBy = "project")
     private MessageProject messageProjectSet;
 

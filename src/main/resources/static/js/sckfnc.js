@@ -2,6 +2,8 @@ let socket = null;
 let isStomp = false;
 let currentURL = window.location.href;
 let mid = currentURL.replace("http://localhost:8080/messages/", "");
+let message_type = "";
+let message_room = ""
 
 function webConnect() {
     let sock = new SockJS("/secured/room");
@@ -21,18 +23,31 @@ function webConnect() {
 
         sessionId = url;
         console.log("CURRENT SESSION: " + url);
-        let tmpo = mid.replace(/[^0-9]+/g, "");
-        console.log("temp " + tmpo);
-        client.subscribe("/secured/user/queue/specific-user" + "-user" + sessionId, function(out) {
-           console.log("INFO: SUBSCRIBE");
+        let message_type = mid.replace(/[^A-Za-z]+/g, "");
+        console.log("Message type: " + message_type);
+        
+        let message_room = mid.replace(/[^0-9]+/g, "");
+        console.log("temp " + message_room);
 
-           let data = JSON.parse(out.body);
-           let midURL = currentURL.replace("http://localhost:8080/messages/", "");
+        if(message_type === "m") {
+            console.log("INFO: SUBSCRIBE PRIVATE MESSAGE");
+            client.subscribe("/secured/user/queue/specific-user" + "-user" + sessionId, function(out) {
+                let data = JSON.parse(out.body);
+                let midURL = currentURL.replace("http://localhost:8080/messages/", "");
 
+                // Show message
+                showMessage(JSON.parse(out.body));
+            });
+        } else {
+            console.log("INFO: SUBSCRIBE GROUP MESSAGE");
+            client.subscribe("/secured/user/queue/group/p.*" , function(out) {
+                let data = JSON.parse(out.body);
+                let midURL = currentURL.replace("http://localhost:8080/messages/", "");
 
-           // Show message
-           showMessage(JSON.parse(out.body));
-        });
+                // Show message
+                showMessage(JSON.parse(out.body));
+            });
+        }
     });
 }
 
@@ -53,6 +68,14 @@ function sendMessage() {
         "sent": t,
         "type": type
     }
+    // let msg = {
+    //     "project": 1,
+    //     "message": 1,
+    //     "content": text,
+    //     "sent": t,
+    //     "type": type
+    // }
+
 
     if (text && isStomp) {
         socket.send("/secured/room", {}, JSON.stringify(msg));
