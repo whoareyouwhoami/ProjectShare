@@ -17,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,9 +28,6 @@ public class MessageController {
 
     @Autowired
     private ProjectService projectService;
-
-    @Autowired
-    private MessageService messageService;
 
     @Autowired
     private RedisService redisService;
@@ -44,7 +41,8 @@ public class MessageController {
     @Autowired
     private MessageChatService messageChatService;
 
-
+    @Autowired
+    private MessageProjectService messageProjectService;
 
     private final RedisMessageListenerContainer redisMessageListenerContainer;
 
@@ -56,128 +54,171 @@ public class MessageController {
 
     @GetMapping("/messages")
     public ModelAndView messageHome(Principal principal) {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("message/messageInbox");
-
-        // Get user information
-        int userID = userService.getUserByEmail(principal.getName()).getId();
-
-        // Retrieve user's chat list
-        List<ChatMessageDetail> messageDetailList = messageService.getAllMessages(userID);
-        Map<String, Map<Project, User>> information = new HashMap<>();
-
-        // Add details
-        for(ChatMessageDetail detail: messageDetailList) {
-            int receiverID = (userID == detail.getUserOne()) ? detail.getUserTwo() : detail.getUserOne();
-            User receiver = userService.getUserById(receiverID);
-
-            Map<Project, User> map = new HashMap<>();
-            map.put(projectService.getProject(detail.getProjectId()), receiver);
-            information.put(Long.toString(detail.getRoomNumber()), map);
+        /* GET CURRENT USER AND IT'S MESSAGES */
+        User currentUser = userService.getUserByEmail(principal.getName());
+        Set<MessageChat> messageChat = currentUser.getMessageChatSet();
+        for(Project p : currentUser.getProjectSet()) {
+            for(MessageChat mc: p.getMessageChatSet()) {
+                messageChat.add(mc);
+            }
         }
 
-        mv.addObject("messageList", information);
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("message/messageInbox");
+        mv.addObject("messageList", messageChat);
         return mv;
     }
 
-    @GetMapping("/messages/{mid}")
-    public ModelAndView messageDetails(@PathVariable("mid") String messageID, Principal principal) {
+    @GetMapping("/messages/d/{pid}")
+    public String redirectMessageChat(@PathVariable("pid") int projectId, Principal principal) {
+        Project project = projectService.getProject(projectId);
+        User currentUser = userService.getUserByEmail(principal.getName());
+
+        /* PREVENT CURRENT USER TO ACCESS ITS OWN PROJECT'S MESSAGE */
+        if(project.getAuthor().getId() == currentUser.getId()) {
+            return "redirect:/project/view/" + projectId;
+        }
+
+        /* RETRIEVE MESSAGE BETWEEN USER AND PROJECT AUTHOR */
+        MessageChat messageChat = messageChatService.getMessageChat(project, currentUser);
+
+        /* CREATES MESSAGE IF IT DOESN'T EXIST */
+        if(messageChat == null) {
+            messageChat = messageChatService.addMessage(project, currentUser);
+        }
+        return "redirect:/messages/m/" + messageChat.getId();
+    }
+
+    @GetMapping("/messages/m/{mid}")
+    public ModelAndView accessPrivateMessage(@PathVariable("mid") int messageId, Principal principal) {
         ModelAndView mv = new ModelAndView();
-        mv.setViewName("message/messageDetail");
+        User currentUser = userService.getUserByEmail(principal.getName());
+        MessageChat messageChat = messageChatService.getMessageById(messageId);
 
-        ChatMessageDetail messageDetail = messageService.getMessageDetail(Long.parseLong(messageID));
-        if(messageDetail == null) {
-            // Set reason -> message doesn't exist
-            mv.setViewName("error/denied");
+        /* CHECK IF MESSAGE EXIST AND IS OWNED BY THE USER OR PROJECT AUTHOR */
+        if (messageChat == null || (messageChat.getUser().getId() != currentUser.getId() && messageChat.getProject().getAuthor().getId() != currentUser.getId())) {
+            mv.setViewName("redirect:/messages");
             return mv;
         }
 
-        int userID = userService.getUserByEmail(principal.getName()).getId();
-        if(!(userID == messageDetail.getUserOne() || userID == messageDetail.getUserTwo())) {
-            // Set reason -> access denied
-            mv.setViewName("error/denied");
-            return mv;
-        }
-
-        // Get sender and Project ID
-        int receiverID = (userID == messageDetail.getUserOne()) ? messageDetail.getUserTwo() : messageDetail.getUserOne();
-        int projectID = messageDetail.getProjectId();
-        User receiver = userService.getUserById(receiverID);
-
-        mv.addObject("authorInfo", receiver);
-        mv.addObject("projectInfo", projectID);
+        User receiver = (messageChat.getUser().getId() == currentUser.getId()) ? messageChat.getProject().getAuthor() : messageChat.getUser();
         mv.addObject("showMessageList", true);
+        mv.addObject("authorEmail", receiver.getEmail());
+        mv.addObject("projectInfo", messageChat.getProject().getId());
+        mv.addObject("messageChat", messageChat);
 
-        // Redis pub/sub
-        String key = "message:" + messageID;
+        /* SUBSCRIBE TO REDIS */
+        String key = "message:m:" + messageId;
         ChannelTopic channel = new ChannelTopic(key);
-        if(!channelMap.containsKey(key)) {
+        if (!channelMap.containsKey(key)) {
+            redisMessageListenerContainer.addMessageListener(redisMessageSubscribe, channel);
+            channelMap.put(key, channel);
+        }
+        System.out.println("ChannelMap: " + channelMap);
+
+        /* SHOW RECENT MESSAGES FROM REDIS */
+        Set<Object> recentMessages = redisService.getRecentMessages(key);
+        if (!recentMessages.isEmpty()) {
+            mv.addObject("messages", recentMessages);
+        }
+
+        /* SHOW OLD MESSAGES FROM DB (TEMPORARY - TO BE CHANGED...) */
+        Set<MessageChatDetail> oldMessages = messageChat.getMessageDetailSet();
+        // ...
+        // ...
+
+        mv.setViewName("message/messageDetail");
+        return mv;
+    }
+
+    @GetMapping("/messages/p/{mid}")
+    public ModelAndView accessGroupMessage(@PathVariable("mid") int messageId, Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        User currentUser = userService.getUserByEmail(principal.getName());
+        MessageProject messageProject = messageProjectService.getMessageProjectById(messageId);
+
+        /* CHECK IF GROUP MESSAGE EXIST AND CURRENT USER IS PART OF THE MESSAGE GROUP */
+        if (messageProject == null || !messageProjectService.checkMessageProjectUserExist(currentUser, messageProject)) {
+            mv.setViewName("redirect:/messages");
+            return mv;
+        }
+
+        /* SUBSCRIBE TO REDIS */
+        String key = "message:p:" + messageId;
+        ChannelTopic channel = new ChannelTopic(key);
+        if (!channelMap.containsKey(key)) {
             redisMessageListenerContainer.addMessageListener(redisMessageSubscribe, channel);
             channelMap.put(key, channel);
         }
 
-        // Retrieve any old messages from DB
-        //
-
-        // Retrieve any recent messages from Redis
-        Set<ChatMessage> recentMessageList = redisService.getRecentMessages(key);
-        if(!recentMessageList.isEmpty()) {
-            mv.addObject("messages", recentMessageList);
-        } else {
-            System.out.println("Empty!");
+        /* SHOW RECENT MESSAGES FROM REDIS */
+        Set<Object> recentMessages = redisService.getRecentMessages(key);
+        if (!recentMessages.isEmpty()) {
+            mv.addObject("messages", recentMessages);
         }
 
+        /* SHOW OLD MESSAGES FROM DB (TEMPORARY - TO BE CHANGED...) */
+        Set<MessageProjectDetail> oldMessages = messageProject.getMessageProjectDetailSet();
+        // ...
+        // ...
+
+        mv.addObject("showMessageList", true);
+        mv.setViewName("message/messageDetail");
         return mv;
     }
 
-    @GetMapping("/messages/p/{pid}")
-    public String accessFromProjectDetail(@PathVariable("pid") int pid, Principal principal) {
-        Project project = projectService.getProject(pid);
-        int userId = userService.getUserByEmail(principal.getName()).getId();
-        // Find message ID -> Creates message ID if it is not present in DB
-        String messageID;
-        try {
-            messageID = messageService.getMessageId(project, userId);
-        } catch (Exception e) {
-            // If user tries to access user's project, redirect to project view
-            return "redirect:/project/view/" + pid;
+    @GetMapping("/messages/p/add/{mid}")
+    private String addGroupUser(@PathVariable("mid") int messageId, Principal principal) {
+        MessageChat messageChat = messageChatService.getMessageById(messageId);
+
+        /* CHECK IF PROJECT AUTHOR ADDED A USER */
+        if(messageChat == null || !messageChat.getProject().getAuthor().getEmail().equals(principal.getName())) {
+            return "redirect:/messages/m/" + messageId;
         }
-        return "redirect:/messages/" + messageID;
 
+        /* ADD USER TO THE GROUP */
+        MessageProject messageProject = messageProjectService.getMessageProject(messageChat.getProject());
+        messageProjectService.addMessageProjectUser(messageChat.getUser(), messageProject);
 
-        // User user = userService.getUserByEmail(principal.getName());
-        // if(user.getId() == project.getOwner().getId())
-        //     return "redirect:/project/view/" + pid;
-        //
-        // MessageChat message = messageChatService.getMessageChat(project, user);
-        // if(message == null) {
-        //     // create new message
-        //     message = messageChatService.addMessage(project, user);
-        // }
-        // return "redirect:/messages/" + message.getId();
+        return "redirect:/messages/m/" + messageId;
     }
 
-
     @MessageMapping("/secured/room")
-    public void sendMessage(@Payload ChatMessage message, Principal principal, @Header("simpSessionId") String sessionId) {
-        long roomNumber = message.getRoomNumber();
+    public void sendMessage(@Payload MessageStructure message, Principal principal, @Header("simpSessionId") String sessionId) {
+        /* CHECK IF A TOPIC EXIST */
+        String key = "message:" + message.getType() + ":" + message.getMessage();
 
-        if(roomNumber == 0) {
-            System.out.println("ERROR");
+        System.out.println("Key: " + key);
+        if(!channelMap.containsKey(key)) {
+            System.out.println("ERROR... KEY DOESN'T EXIST");
+        }
+
+        User currentUser = userService.getUserByEmail(principal.getName());
+        Project project = projectService.getProject(message.getProject());
+        if(project == null) {
+            System.out.println("PROJECT DOESN'T EXIST");
             return;
         }
 
-        int chatId = messageService.getChatId(roomNumber, message.getProjectId());
-        if(chatId == -1) {
-            System.out.println("ERROR");
-            return;
-        }
+        /* PUBLISH TO CORRESPONDING MESSAGE TYPE */
+        if(message.getType().equals("m")) {
+            MessageChat messageChat = messageChatService.getMessageById(message.getMessage());
+            MessageChatDetail messageChatDetail = new MessageChatDetail(messageChat, currentUser, message.getContent(), LocalDateTime.now());
 
-        ChatMessage chatMessage = new ChatMessage(chatId, principal.getName(), message.getToUser(), message.getContent(), LocalDateTime.now(), message.getProjectId(), message.getRoomNumber());
-        String key = "message:" + roomNumber;
-        if(channelMap.containsKey(key)) {
-            System.out.println("Channel: " + channelMap.get(key).getTopic());
-            redisMessagePublish.publish(channelMap.get(key), chatMessage);
+            if(currentUser.getId() == project.getAuthor().getId()) {
+                message.setReceiver(messageChat.getUser().getEmail());
+            } else {
+                message.setReceiver(project.getAuthor().getEmail());
+            }
+
+            redisMessagePublish.publishMessage(channelMap.get(key), messageChatDetail, message);
+        } else if(message.getType().equals("p")) {
+            MessageProject messageProject = messageProjectService.getMessageProjectById(message.getMessage());
+            MessageProjectDetail messageProjectDetail = new MessageProjectDetail(messageProject, currentUser, message.getContent(), LocalDateTime.now());
+
+            redisMessagePublish.publishProjectMessage(channelMap.get(key), messageProjectDetail, message);
+        } else {
+            System.out.println("ERROR...");
         }
     }
 }

@@ -22,22 +22,15 @@ CREATE TABLE Role (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE UserRole (
-  user_id INT NOT NULL,
-  role_id INT NOT NULL,
-
-  PRIMARY KEY (user_id, role_id),
-  CONSTRAINT fk_user_role_roleid FOREIGN KEY (role_id) REFERENCES Role (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT fk_user_role_userid FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
+INSERT INTO Role(name) VALUES("USER");
 
 CREATE TABLE UserRole (
   user_id INT NOT NULL,
   role_id INT NOT NULL,
 
   PRIMARY KEY (user_id, role_id),
-  CONSTRAINT fk_user_role_roleid FOREIGN KEY (role_id) REFERENCES Role (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT fk_user_role_userid FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT fk_user_role_role_id FOREIGN KEY (role_id) REFERENCES Role (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_user_role_user_id FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Project (
@@ -48,47 +41,23 @@ CREATE TABLE Project (
     dateStart DATE NOT NULL,
     dateEnd DATE NOT NULL,
     dateUpload TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    dateModified TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    owner_id INT NOT NULL,
-    visibility TINYINT(1) NOT NULL DEFAULT 0,
+    dateModified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     status TINYINT(1) NOT NULL DEFAULT 0,
+    author_id INT NOT NULL,
 
     PRIMARY KEY(id),
-    CONSTRAINT fk_user_project_ownerid FOREIGN KEY (owner_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT fk_user_project_author_id FOREIGN KEY (author_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE ProjectUser (
-  user_id INT NOT NULL,
+  member_id INT NOT NULL,
   project_id INT NOT NULL,
+  joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-  PRIMARY KEY (user_id, project_id),
-  CONSTRAINT fk_user_project_userid FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT fk_user_project_projectid FOREIGN KEY (project_id) REFERENCES Project (id) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (member_id, project_id),
+  CONSTRAINT fk_user_project_member_id FOREIGN KEY (member_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_user_project_project_id FOREIGN KEY (project_id) REFERENCES Project (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-CREATE TABLE ChatMessageDetail (
-  id INT NOT NULL AUTO_INCREMENT,
-  projectId INT,
-  userOne INT DEFAULT NULL,
-  userTwo INT DEFAULT NULL,
-  roomNumber BIGINT DEFAULT NULL UNIQUE,
-
-  PRIMARY KEY (id),
-  CONSTRAINT fk_message_project_id FOREIGN KEY (projectId) REFERENCES Project (id) ON DELETE SET NULL ON UPDATE CASCADE
-);
-
-CREATE TABLE ChatMessage (
-  id INT NOT NULL AUTO_INCREMENT,
-  messageId INT NOT NULL,
-  fromUser VARCHAR(255) DEFAULT NULL,
-  toUser VARCHAR(255) DEFAULT NULL,
-  content VARCHAR(255) DEFAULT NULL,
-  sentTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-  PRIMARY KEY (id),
-  CONSTRAINT fk_message_id FOREIGN KEY (messageId) REFERENCES ChatMessageDetail (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 
 CREATE TABLE MessageChat (
   id INT NOT NULL AUTO_INCREMENT,
@@ -100,7 +69,7 @@ CREATE TABLE MessageChat (
 
   PRIMARY KEY (id),
   CONSTRAINT fk_message_chat_project_id FOREIGN KEY (project_id) REFERENCES Project (id) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT fk_message_chat_user_id FOREIGN KEY (user_id) REFERENCES Project (id) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT fk_message_chat_user_id FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CHANGE content TYPE LATER
@@ -139,14 +108,12 @@ CREATE TABLE MessageProjectDetail (
   CONSTRAINT fk_message_project_detail_sender_id FOREIGN KEY (sender_id) REFERENCES User (id) ON DELETE SET NULL ON UPDATE CASCADE  
 );
 
-
 CREATE TABLE MessageProjectUser (
-  id INT NOT NULL AUTO_INCREMENT,
   user_id INT NOT NULL,
   message_project_id INT NOT NULL,
   joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-  PRIMARY KEY (id),
+  PRIMARY KEY (user_id, message_project_id),
   CONSTRAINT fk_message_project_user_user_id FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT fk_message_project_user_message_project_id FOREIGN KEY (message_project_id) REFERENCES MessageProject (id) ON DELETE CASCADE ON UPDATE CASCADE
 );

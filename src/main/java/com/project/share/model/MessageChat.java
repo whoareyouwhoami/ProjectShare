@@ -1,6 +1,7 @@
 package com.project.share.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -40,8 +41,16 @@ public class MessageChat {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime created;
 
-    @OneToMany(mappedBy = "messageChat")
-    private Set<MessageDetail> messageDetailSet;
+    @OneToMany(mappedBy = "messageChat", fetch = FetchType.EAGER)
+    private Set<MessageChatDetail> messageChatDetailSet;
+
+    public MessageChat() {}
+
+    public MessageChat(Project project, User user, String name) {
+        this.project = project;
+        this.user = user;
+        this.name = name;
+    }
 
     public int getId() {
         return id;
@@ -91,11 +100,11 @@ public class MessageChat {
         this.created = created;
     }
 
-    public Set<MessageDetail> getMessageDetailSet() {
-        return messageDetailSet;
+    public Set<MessageChatDetail> getMessageDetailSet() {
+        return messageChatDetailSet;
     }
 
-    public void setMessageDetailSet(Set<MessageDetail> messageDetailSet) {
-        this.messageDetailSet = messageDetailSet;
+    public void setMessageDetailSet(Set<MessageChatDetail> messageChatDetailSet) {
+        this.messageChatDetailSet = messageChatDetailSet;
     }
 }

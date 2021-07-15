@@ -33,6 +33,15 @@ public class MessageProjectDetail {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime sent;
 
+    public  MessageProjectDetail() {}
+
+    public MessageProjectDetail(MessageProject messageProject, User sender, String content, LocalDateTime sent) {
+        this.messageProject = messageProject;
+        this.sender = sender;
+        this.content = content;
+        this.sent = sent;
+    }
+
     public int getId() {
         return id;
     }

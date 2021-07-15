@@ -4,6 +4,7 @@ import com.project.share.dao.MessageProjectDao;
 import com.project.share.dao.MessageProjectDetailDao;
 import com.project.share.dao.MessageProjectUserDao;
 import com.project.share.model.*;
+import com.project.share.model.keys.MessageProjectUserKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,6 @@ public class MessageProjectServiceImpl implements MessageProjectService {
         messageProject.setProject(project);
         messageProject.setName("Message - " + project.getTitle());
         return messageProjectDao.save(messageProject);
-
     }
 
     @Override
@@ -35,11 +35,21 @@ public class MessageProjectServiceImpl implements MessageProjectService {
     }
 
     @Override
+    public MessageProject getMessageProjectById(int id) {
+        return messageProjectDao.findById(id).orElse(null);
+    }
+
+    @Override
     public void addMessageProjectUser(User user, MessageProject messageProject) {
-        MessageProjectUser messageProjectUser = new MessageProjectUser();
-        messageProjectUser.setUser(user);
-        messageProjectUser.setMessageProject(messageProject);
-        messageProjectUserDao.save(messageProjectUser);
+        MessageProjectUserKey key = new MessageProjectUserKey();
+        key.setMessageProjectId(messageProject.getId());
+        key.setUserId(user.getId());
+
+        MessageProjectUser messageProjectUser = messageProjectUserDao.findById(key);
+        if(messageProjectUser == null) {
+            messageProjectUser = new MessageProjectUser(key, user, messageProject);
+            messageProjectUserDao.save(messageProjectUser);
+        }
     }
 
     @Override

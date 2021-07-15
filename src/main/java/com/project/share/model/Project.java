@@ -1,6 +1,5 @@
 package com.project.share.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -12,7 +11,6 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.project.share.validate.ValidateProjectDateDifference;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.redis.core.RedisHash;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -26,7 +24,6 @@ import java.util.Set;
         fieldStart = "dateStart",
         fieldEnd = "dateEnd"
 )
-@RedisHash
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,56 +37,52 @@ public class Project {
     // @Lob -> longtext
     private String description;
 
-    // @Positive
     private int member;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateStart;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateEnd;
 
     @CreationTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dateUpload;
 
     @UpdateTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dateModified;
-
-    @Transient
-    // @Field(type = FieldType.Nested, includeInParent = true)
-    private String ownerName;
-
-    @JsonBackReference
-    @OneToOne(cascade = CascadeType.ALL)
-    private User owner;
-
-    // @Column(columnDefinition="BIT(1) DEFAULT 0")
-    // private boolean visibility;
 
     @Column(columnDefinition="BIT(1) DEFAULT 0")
     private boolean status;
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "ProjectUser", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> user;
+    /* AUTHOR OF THE PROJECT */
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private User author;
 
-    /*
-     * THIS MAY NOT BE NECESSARY SINCE UNIDIRECTIONAL
-     *
-     */
+    /* TO CHECK MEMBERS IN THE PROJECT GROUP */
+    @JsonIgnore
+    @OneToMany(mappedBy = "project")
+    private Set<ProjectUser> projectUserSet;
+
+    /* CHECK ANY PRIVATE MESSAGE RECEIVED FOR THE PROJECT */
+    @JsonIgnore
+    @OneToMany(mappedBy = "project")
+    private Set<MessageChat> messageChatSet;
+
+    /* THIS MAY NOT BE NECESSARY SINCE UNIDIRECTIONAL */
+    @JsonIgnore
     @OneToOne(mappedBy = "project")
     private MessageProject messageProjectSet;
 
@@ -167,22 +160,6 @@ public class Project {
         this.dateModified = dateModified;
     }
 
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
-
-    // public boolean isVisibility() {
-    //     return visibility;
-    // }
-    //
-    // public void setVisibility(boolean visibility) {
-    //     this.visibility = visibility;
-    // }
-
     public boolean isStatus() {
         return status;
     }
@@ -191,20 +168,28 @@ public class Project {
         this.status = status;
     }
 
-    public Set<User> getUser() {
-        return user;
+    public User getAuthor() {
+        return author;
     }
 
-    public void setUser(Set<User> user) {
-        this.user = user;
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
-    public String getOwnerName() {
-        return ownerName;
+    public Set<ProjectUser> getProjectUserSet() {
+        return projectUserSet;
     }
 
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
+    public void setProjectUserSet(Set<ProjectUser> projectUserSet) {
+        this.projectUserSet = projectUserSet;
+    }
+
+    public Set<MessageChat> getMessageChatSet() {
+        return messageChatSet;
+    }
+
+    public void setMessageChatSet(Set<MessageChat> messageChatSet) {
+        this.messageChatSet = messageChatSet;
     }
 
     public MessageProject getMessageProjectSet() {

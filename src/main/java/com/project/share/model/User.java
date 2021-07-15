@@ -1,5 +1,6 @@
 package com.project.share.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.share.validate.ValidCheckEmail;
 import com.project.share.validate.ValidCheckPasswordConfirm;
@@ -62,35 +63,25 @@ public class User implements UserDetails {
 
     private boolean enabled;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "UserRole", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
 
-    @JsonManagedReference
-    @OneToOne(mappedBy = "owner")
-    private Project project;
-    
-    @ManyToMany(mappedBy = "user")
-    private List<Project> projects;
+    /* GET LIST OF PROJECTS UPLOADED BY THE USER */
+    @JsonIgnore
+    @OneToMany(mappedBy = "author")
+    private Set<Project> projectSet;
 
-    /*
-     * =====================================
-     * CHANGES MADE FROM THIS POINT
-     * =====================================
-     */
+    /* GET LIST OF PROJECT MESSAGES THAT THE USER IS INVOLVED */
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private Set<MessageProjectUser> messageProjectUserSet;
 
-    /*
-     * THIS MAY NOT BE NECESSARY SINCE UNIDIRECTIONAL
-     *
-     * @OneToMany(mappedBy = "sender")
-     * private Set<MessageDetail> messageDetailSet;
-     *
-     * @OneToMany(mappedBy = "sender")
-     * private Set<MessageProjectDetail> messageProjecrtDetailSet;
-     */
-
+    /* GET LIST OF PRIVATE MESSAGES BETWEEN USER AND PROJECT AUTHOR */
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private Set<MessageChat> messageChatSet;
 
     public User() {
     }
@@ -231,25 +222,18 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public List<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(List<Project> projects) {
-        this.projects = projects;
-    }
-
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
+    }
+
+    public Set<Project> getProjectSet() {
+        return projectSet;
+    }
+
+    public void setProjectSet(Set<Project> projectSet) {
+        this.projectSet = projectSet;
     }
 
     public Set<MessageProjectUser> getMessageProjectUserSet() {
@@ -258,5 +242,13 @@ public class User implements UserDetails {
 
     public void setMessageProjectUserSet(Set<MessageProjectUser> messageProjectUserSet) {
         this.messageProjectUserSet = messageProjectUserSet;
+    }
+
+    public Set<MessageChat> getMessageChatSet() {
+        return messageChatSet;
+    }
+
+    public void setMessageChatSet(Set<MessageChat> messageChatSet) {
+        this.messageChatSet = messageChatSet;
     }
 }

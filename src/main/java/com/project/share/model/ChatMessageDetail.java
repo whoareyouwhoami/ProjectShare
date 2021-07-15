@@ -2,7 +2,7 @@ package com.project.share.model;
 
 import javax.persistence.*;
 
-@Entity
+
 public class ChatMessageDetail {
 
     @Id

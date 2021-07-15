@@ -5,26 +5,26 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.project.share.model.keys.MessageProjectUserKey;
+import com.project.share.model.keys.ProjectUserKey;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class MessageProjectUser {
+public class ProjectUser {
     @EmbeddedId
-    private MessageProjectUserKey id;
+    private ProjectUserKey id;
 
     @ManyToOne
     @MapsId("userId")
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "member_id")
     private User user;
 
     @ManyToOne
-    @MapsId("messageProjectId")
-    @JoinColumn(name = "message_project_id")
-    private MessageProject messageProject;
+    @MapsId("projectId")
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     @CreationTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -32,18 +32,11 @@ public class MessageProjectUser {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime joined;
 
-    public MessageProjectUser() {}
-    public MessageProjectUser(MessageProjectUserKey id, User user, MessageProject messageProject) {
-        this.id = id;
-        this.user = user;
-        this.messageProject = messageProject;
-    }
-
-    public MessageProjectUserKey getId() {
+    public ProjectUserKey getId() {
         return id;
     }
 
-    public void setId(MessageProjectUserKey id) {
+    public void setId(ProjectUserKey id) {
         this.id = id;
     }
 
@@ -55,12 +48,12 @@ public class MessageProjectUser {
         this.user = user;
     }
 
-    public MessageProject getMessageProject() {
-        return messageProject;
+    public Project getProject() {
+        return project;
     }
 
-    public void setMessageProject(MessageProject messageProject) {
-        this.messageProject = messageProject;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public LocalDateTime getJoined() {

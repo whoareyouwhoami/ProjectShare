@@ -114,7 +114,7 @@ public class ProjectControllerTest {
     @WithMockUser
     public void testViewProjectPage() throws Exception {
         when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
-        when(projectService.getAllUserProject(user)).thenReturn(Arrays.asList(project));
+//        when(projectService.getAllUserProject(user)).thenReturn(Arrays.asList(project));
 
         mockMvc
                 .perform(get("/project/view"))
