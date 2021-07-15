@@ -1,14 +1,13 @@
  package com.project.share.controller;
 
- import com.project.share.exception.ProjectException;
  import com.project.share.model.MessageProject;
  import com.project.share.model.Project;
+ import com.project.share.model.ProjectES;
  import com.project.share.model.User;
  import com.project.share.service.*;
  import org.slf4j.Logger;
  import org.slf4j.LoggerFactory;
  import org.springframework.beans.factory.annotation.Autowired;
- import org.springframework.data.redis.core.RedisTemplate;
  import org.springframework.stereotype.Controller;
  import org.springframework.ui.Model;
  import org.springframework.validation.BindingResult;
@@ -18,9 +17,8 @@
 
  import javax.validation.Valid;
  import java.security.Principal;
- import java.util.HashSet;
+ import java.time.LocalDateTime;
  import java.util.List;
- import java.util.Map;
  import java.util.Set;
 
  @Controller
@@ -35,26 +33,20 @@
      private UserService userService;
 
      @Autowired
-     private RedisService redisService;
-
-     @Autowired
      private MessageProjectService messageProjectService;
 
      @Autowired
-     private MessageChatService messageChatService;
+     private ESService esService;
 
      @GetMapping(path = {"", "/"})
      public ModelAndView projectHome() {
          ModelAndView mv = new ModelAndView();
          mv.setViewName("project/projectHome");
 
-         /*
-          * == CHANGE NEEDED ==
-          * ADD PAGING LATER
-          */
+         /* ADD PAGING LATER */
+
          List<Project> projectList = projectService.getAllProject();
          mv.addObject("projectList", projectList);
-
          return mv;
      }
 
@@ -82,6 +74,18 @@
          Project savedProject = projectService.saveProject(project);
          rm.addFlashAttribute("proj_detail", savedProject);
          mv.setViewName("redirect:/project/view/" + project.getId());
+
+         /* SAVING PROJECT DETAILS IN ELASTICSEARCH */
+         ProjectES projectES = new ProjectES(
+                 savedProject.getId(),
+                 savedProject.getTitle(),
+                 savedProject.getDescription(),
+                 savedProject.getMember(),
+                 savedProject.getDateStart(),
+                 savedProject.getDateEnd(),
+                 LocalDateTime.now(),
+                 savedProject.getAuthor().getFirstName());
+         esService.saveProjectToES(projectES);
 
          /* CREATES MESSAGE GROUP FOR PROJECT */
          MessageProject messageProject = messageProjectService.createMessageProject(savedProject);
@@ -163,6 +167,18 @@
              return mv;
          }
 
+         /* UPDATING PROJECT DETAILS IN ELASTICSEARCH */
+         ProjectES projectES = new ProjectES(
+                 savedProject.getId(),
+                 savedProject.getTitle(),
+                 savedProject.getDescription(),
+                 savedProject.getMember(),
+                 savedProject.getDateStart(),
+                 savedProject.getDateEnd(),
+                 LocalDateTime.now(),
+                 savedProject.getAuthor().getFirstName());
+         esService.saveProjectToES(projectES);
+
          /* REDIRECTING TO VIEW PAGE */
          mv.setViewName("redirect:/project/view/" + savedProject.getId());
          rm.addFlashAttribute("proj_detail", savedProject);
@@ -171,9 +187,6 @@
          return mv;
      }
 
-     /*
-      * WILL BE FIXED SOON...
-      */
      @GetMapping("/search")
      public ModelAndView projectSearch(@RequestParam(name="q", required = false) String query) {
          ModelAndView mv = new ModelAndView();
@@ -181,30 +194,29 @@
 
          if(query != null) {
              query = query.strip();
-             List<Map<Object, Object>> searchResult = redisService.searchProject(query);
-             if(searchResult.size() == 0) {
+             List<ProjectES> result = esService.getSearchQuery(query);
+             if(result.size() == 0) {
                  mv.addObject("emptyResult", 0);
                  return mv;
              }
-             mv.addObject("searchResult", searchResult);
+             mv.addObject("searchResult", result);
          }
          return mv;
      }
 
-     /*
-      * Add - ALERT BEFORE DELETION
-      */
      @GetMapping("/delete/{pid}")
      public String projectDelete(@PathVariable("pid") int pid, Principal principal) {
-         // Validate owner
+         /* VALIDATE PROJECT AUTHOR */
          Project project = projectService.getProject(pid);
-         if(!project.getAuthor().getEmail().equals(principal.getName())) {
-             log.info("FAIL DELETE - Invalid user");
-             return "project/projectView";
-         }
-         log.info("SUCCESS DELETE");
-         projectService.removeProject(pid);
-         return "main/home";
-     }
+         if(!project.getAuthor().getEmail().equals(principal.getName()))
+             return "redirect:/project/view/" + pid;
 
+        /* DELETE PROJECT FROM ELASTICSEARCH */
+         esService.removeProject(pid);
+
+         /* DELETE PROJECT FROM DB */
+         projectService.removeProject(pid);
+
+         return "redirect:/project";
+     }
  }

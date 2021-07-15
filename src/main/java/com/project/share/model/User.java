@@ -68,12 +68,6 @@ public class User implements UserDetails {
     @JoinTable(name = "UserRole", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
 
-    /*
-     * =====================================
-     * CHANGES MADE FROM THIS POINT
-     * =====================================
-     */
-
     /* GET LIST OF PROJECTS UPLOADED BY THE USER */
     @JsonIgnore
     @OneToMany(mappedBy = "author")

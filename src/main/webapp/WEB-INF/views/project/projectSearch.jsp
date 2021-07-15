@@ -29,7 +29,7 @@
             </form>
 
             <c:if test="${emptyResult == 0}">
-                <p>No result found...</p>
+                <p>No projects found...</p>
             </c:if>
 
             <c:forEach var="qq" items="${searchResult}">
@@ -39,7 +39,6 @@
                     <p>Required members: <c:out value="${qq.member}"/></p>
                     <p>Start date: <c:out value="${qq.dateStart}"/></p>
                     <p>End date: <c:out value="${qq.dateEnd}"/></p>
-                    <p>Posted by: <c:out value="${qq.ownerName}"/></p>
                     <small><a href="${contextPath}/project/view/${qq.id}">Check project</a></small>
                 </div>
                 <br>

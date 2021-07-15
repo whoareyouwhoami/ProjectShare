@@ -11,7 +11,6 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.project.share.validate.ValidateProjectDateDifference;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.redis.core.RedisHash;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -25,7 +24,6 @@ import java.util.Set;
         fieldStart = "dateStart",
         fieldEnd = "dateEnd"
 )
-@RedisHash
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

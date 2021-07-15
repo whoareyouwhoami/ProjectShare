@@ -31,25 +31,6 @@ public class RedisConfig {
         return container;
     }
 
-    // // REDIS STREAM
-    // @Bean
-    // public Subscription subscription(RedisConnectionFactory redisConnectionFactory) {
-    //     StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, ChatMessage>> options = StreamMessageListenerContainer
-    //             .StreamMessageListenerContainerOptions
-    //             .builder()
-    //             .pollTimeout(Duration.ofSeconds(1))
-    //             .targetType(ChatMessage.class)
-    //             .build();
-    //
-    //     StreamMessageListenerContainer<String, ObjectRecord<String, ChatMessage>> container = StreamMessageListenerContainer
-    //             .create(redisConnectionFactory, options);
-    //
-    //     Subscription subscription = container.receive(StreamOffset.fromStart(STREAM_KEY), streamListener);
-    //     container.start();
-    //
-    //     return subscription;
-    // }
-
     @Bean
     public RedisTemplate<String, Object> redisMessageTemplate() {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
@@ -58,7 +39,6 @@ public class RedisConfig {
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return redisTemplate;
     }
-
 
     @Bean
     public RedisTemplate<String, Project> redisTemplateString() {

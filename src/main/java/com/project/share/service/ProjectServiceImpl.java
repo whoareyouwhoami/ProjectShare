@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -29,8 +30,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Project updateProject(Project prev, Project current) {
-        if(current.getDateStart().isBefore(prev.getDateStart())) {
-            return null;
+        if(!current.getDateStart().isEqual(prev.getDateStart()) || !current.getDateEnd().isEqual(prev.getDateEnd())) {
+            if(current.getDateStart().isBefore(prev.getDateStart()) && current.getDateStart().isBefore(LocalDate.now())) {
+                return null;
+            }
         }
         prev.setTitle(current.getTitle());
         prev.setDescription(current.getDescription());
