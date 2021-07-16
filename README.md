@@ -32,12 +32,9 @@ Spring Boot
 
 MySQL
 - 메인 데이터베이스로 활용해 유저, 프로젝트, 메세지 정보를 담는 용도로 사용함
-- Redis에 저장되는 메시지 내용을 백업해서 사용함
 
 Redis
-- 메시지 정보를 빠른 속도로 저장하고 읽기 위해 in-memory 데이터베이스로 사용
-- Redis pub/sub 을 사용해서 서로 다른 서버끼리의 데이터 전달을 도와주는 용도로 사용
-- Redis cluster 를 사용해서 신속하게 메시지를 저장하고 읽는 목적으로 사용
+- Redis Pub/Sub을 사용해 서로 다른 서버끼리의 데이터 전달을 도와주는 용도로 사용
 
 Elasticsearch
 - Lucene 기반 검색 엔진
