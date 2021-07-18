@@ -43,6 +43,8 @@ Elasticsearch
 
 ### 서비스 아키텍쳐
 
+[데이터베이스 구조](docs/Database.md)
+
 ![User Architecture](docs/pics/service_user.png)
 
 유저는 처음 사이트에 접속하면 가입을 해야된다. 계정이 있으면 로그인을 통해 메인 화면으로 이동할 수 있다.
