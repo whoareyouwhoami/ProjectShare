@@ -13,6 +13,7 @@ services:
       - elasticsearch
     networks:
       - backend
+
   database:
     container_name: container_database
     image: mysql:8.0.22
@@ -30,6 +31,7 @@ services:
       - "3306:3306"
     networks:
       - backend
+
   redis:
     container_name: container_redis
     image: redis:6.2-alpine
@@ -40,6 +42,7 @@ services:
       - ./database/storage/redis:/data
     networks:
       - backend
+
   elasticsearch:
     container_name: container_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
@@ -56,6 +59,7 @@ services:
       - /database/storage/elasticsearch:/usr/share/elasticsearch/data
     networks:
       - backend
+
   kibana:
     container_name: container_kibana
     image: docker.elastic.co/kibana/kibana:7.14.0
@@ -67,8 +71,10 @@ services:
       - elasticsearch
     networks:
       - backend
+
 volumes:
   storage_mysql:
+
 networks:
   backend:
     driver: bridge
