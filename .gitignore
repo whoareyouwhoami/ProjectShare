@@ -1,6 +1,7 @@
 .mvn/
 mvnw
 mvnw.cmd
+/database/storage/
 
 HELP.md
 target/

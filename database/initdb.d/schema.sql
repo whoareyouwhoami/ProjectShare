@@ -1,4 +1,9 @@
-CREATE TABLE User (
+CREATE DATABASE IF NOT EXISTS ShareDB;
+
+USE ShareDB;
+
+
+CREATE TABLE IF NOT EXISTS User (
 	id INT NOT NULL AUTO_INCREMENT,
 	firstName VARCHAR(255) NOT NULL,
 	lastName VARCHAR(255) NOT NULL,
@@ -16,7 +21,8 @@ CREATE TABLE User (
 	PRIMARY KEY(id)
 );
 
-CREATE TABLE Role (
+
+CREATE TABLE IF NOT EXISTS Role (
   id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(45),
   PRIMARY KEY (id)
@@ -24,7 +30,8 @@ CREATE TABLE Role (
 
 INSERT INTO Role(name) VALUES("USER");
 
-CREATE TABLE UserRole (
+
+CREATE TABLE IF NOT EXISTS UserRole (
   user_id INT NOT NULL,
   role_id INT NOT NULL,
 
@@ -33,7 +40,8 @@ CREATE TABLE UserRole (
   CONSTRAINT fk_user_role_user_id FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE Project (
+
+CREATE TABLE IF NOT EXISTS Project (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
@@ -49,7 +57,8 @@ CREATE TABLE Project (
     CONSTRAINT fk_user_project_author_id FOREIGN KEY (author_id) REFERENCES User (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE ProjectUser (
+
+CREATE TABLE IF NOT EXISTS ProjectUser (
   member_id INT NOT NULL,
   project_id INT NOT NULL,
   joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -59,7 +68,8 @@ CREATE TABLE ProjectUser (
   CONSTRAINT fk_user_project_project_id FOREIGN KEY (project_id) REFERENCES Project (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE MessageChat (
+
+CREATE TABLE IF NOT EXISTS MessageChat (
   id INT NOT NULL AUTO_INCREMENT,
   project_id INT,
   user_id INT,
@@ -72,8 +82,9 @@ CREATE TABLE MessageChat (
   CONSTRAINT fk_message_chat_user_id FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
+
 -- CHANGE content TYPE LATER
-CREATE TABLE MessageDetail (
+CREATE TABLE IF NOT EXISTS MessageChatDetail (
   id INT NOT NULL AUTO_INCREMENT,
   message_id INT NOT NULL,
   sender_id INT,
@@ -85,7 +96,8 @@ CREATE TABLE MessageDetail (
   CONSTRAINT fk_message_detail_sender_id FOREIGN KEY (sender_id) REFERENCES User (id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
-CREATE TABLE MessageProject (
+
+CREATE TABLE IF NOT EXISTS MessageProject (
   id INT NOT NULL AUTO_INCREMENT,
   project_id INT NOT NULL,
   name VARCHAR(255),
@@ -95,8 +107,9 @@ CREATE TABLE MessageProject (
   CONSTRAINT fk_message_project_project_id FOREIGN KEY (project_id) REFERENCES Project (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+
 -- CHANGE content TYPE LATER
-CREATE TABLE MessageProjectDetail (
+CREATE TABLE IF NOT EXISTS MessageProjectDetail (
   id INT NOT NULL AUTO_INCREMENT,
   message_project_id INT NOT NULL,
   sender_id INT,
@@ -108,7 +121,8 @@ CREATE TABLE MessageProjectDetail (
   CONSTRAINT fk_message_project_detail_sender_id FOREIGN KEY (sender_id) REFERENCES User (id) ON DELETE SET NULL ON UPDATE CASCADE  
 );
 
-CREATE TABLE MessageProjectUser (
+
+CREATE TABLE IF NOT EXISTS MessageProjectUser (
   user_id INT NOT NULL,
   message_project_id INT NOT NULL,
   joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

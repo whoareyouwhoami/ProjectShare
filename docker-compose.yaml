@@ -1,0 +1,74 @@
+version: '3.9'
+services:
+  backend:
+    build: .
+    container_name: container_backend
+    ports:
+      - "8080:8080"
+    environment:
+      spring.datasource.url: "jdbc:mysql://database:3306/ShareDB?serverTimezone=Asia/Seoul"
+    depends_on:
+      - database
+      - redis
+      - elasticsearch
+    networks:
+      - backend
+  database:
+    container_name: container_database
+    image: mysql:8.0.22
+    volumes:
+      - storage_mysql:/var/lib/mysql
+      - ./database/initdb.d:/docker-entrypoint-initdb.d
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: helloworld
+      MYSQL_DATABASE: ShareDB
+      MYSQL_USER: youngwoo
+      MYSQL_PASSWORD: helloworld
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+  redis:
+    container_name: container_redis
+    image: redis:6.2-alpine
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./database/storage/redis:/data
+    networks:
+      - backend
+  elasticsearch:
+    container_name: container_elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    ports:
+      - "9200:9200"
+#      - "127.0.0.1:9200:9200"
+    environment:
+      - node.name=es_node_1
+      - cluster.name=es_cluster_1
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx523m" # Not recommended in production
+    volumes:
+      - /database/storage/elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - backend
+  kibana:
+    container_name: container_kibana
+    image: docker.elastic.co/kibana/kibana:7.14.0
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - backend
+volumes:
+  storage_mysql:
+networks:
+  backend:
+    driver: bridge

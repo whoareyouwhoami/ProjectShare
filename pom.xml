@@ -13,6 +13,7 @@
     <version>0.0.1</version>
     <name>Project Share</name>
     <description>Project Share</description>
+    <packaging>war</packaging>
 
     <properties>
         <java.version>11</java.version>
@@ -63,11 +64,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>
 
         <dependency>
@@ -140,6 +136,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <finalName>ProjectShare</finalName>
+                </configuration>
             </plugin>
         </plugins>
     </build>
