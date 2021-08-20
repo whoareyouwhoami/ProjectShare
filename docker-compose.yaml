@@ -56,7 +56,7 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx523m" # Not recommended in production
     volumes:
-      - /database/storage/elasticsearch:/usr/share/elasticsearch/data
+      - ./database/storage/elasticsearch:/usr/share/elasticsearch/data
     networks:
       - backend
 

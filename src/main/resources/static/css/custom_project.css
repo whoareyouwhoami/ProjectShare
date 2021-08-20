@@ -1,0 +1,16 @@
+html, body {
+    height: 100%;
+}
+
+.row {
+    margin-bottom: 15px;
+}
+
+.row-button {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.search-result-block {
+    height: 35rem;
+}
