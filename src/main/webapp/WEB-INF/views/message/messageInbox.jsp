@@ -9,40 +9,72 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="<c:url value="/css/custom_message.css" />" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <title>Messages</title>
 </head>
+
 <body>
-    <div>
-        <div>
-            <a href="${contextPath}/" class="ml-1">Back</a>
+    <jsp:include page="../frames/navbar.jsp" />
+    <div class="container pt-2 pb-4">
+        <div class="row mb-3 pe-3 ps-3">
+            <h1 class="h2 mt-3 p-0 fw-normal">Inbox</h1>
         </div>
-        <div>
-            <div>
-                <h1>Messages inbox</h1>
-                <a href="<c:url value="${contextPath}/home" />">Home</a>
-                <a href="<c:url value="${contextPath}/project" />">Project</a>
-                <a href="<c:url value="${contextPath}/messages" />">Message</a>
-            </div>
-
-            <div style="overflow: auto; height: 700px; width: 25%; margin-top: 15px;">
-
-
+        <div class="row">
+            <div class="col-3 border border-primary  overflow-scroll message-inbox-block">
                 <c:forEach var="message" items="${messageList}" varStatus="status">
-                    <div style="padding: 5px; border-bottom: 1px solid grey;">
-                        <small> Message ID: ${message.id}</small>
+                    <div class="row">
+                        <div class="col">
+                            <a href="${contextPath}/messages/m/${message.id}" class="text-decoration-none text-body">
 
-                        <div style="margin-bottom: 3px">
-                            <p style="margin: 3px"><b>@${message.project.author.firstName}</b></p>
-                            <p style="margin: 3px;">Project - ${message.project.title}</p>
-                            <a href="${contextPath}/messages/m/${message.id}">Send message</a>
+                                <div class="card">
+
+                                    <small class="visually-hidden">${message.id}</small>
+                                    <div class="card-header">
+                                        Project: ${message.project.title}
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">${message.project.author.firstName}</h5>
+                                        <p class="card-text text-truncate">Last message received from the user</p>
+                                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                    </div>
+                                </div>
+
+                            </a>
                         </div>
                     </div>
                 </c:forEach>
+            </div>
+
+            <div class="col-9 border border-primary">
 
             </div>
         </div>
+
+<%--        <div>--%>
+<%--            <div style="overflow: auto; height: 700px; width: 25%; margin-top: 15px;">--%>
+
+
+<%--                <c:forEach var="message" items="${messageList}" varStatus="status">--%>
+<%--                    <div style="padding: 5px; border-bottom: 1px solid grey;">--%>
+<%--                        <small> Message ID: ${message.id}</small>--%>
+
+<%--                        <div style="margin-bottom: 3px">--%>
+<%--                            <p style="margin: 3px"><b>@${message.project.author.firstName}</b></p>--%>
+<%--                            <p style="margin: 3px;">Project - ${message.project.title}</p>--%>
+<%--                            <a href="${contextPath}/messages/m/${message.id}">Send message</a>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+<%--                </c:forEach>--%>
+
+<%--            </div>--%>
+<%--        </div>--%>
     </div>
+
+    <jsp:include page="../frames/footer.jsp" />
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
 </body>
 </html>
