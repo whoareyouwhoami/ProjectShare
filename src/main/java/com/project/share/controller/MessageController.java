@@ -57,15 +57,25 @@ public class MessageController {
         /* GET CURRENT USER AND IT'S MESSAGES */
         User currentUser = userService.getUserByEmail(principal.getName());
         Set<MessageChat> messageChat = currentUser.getMessageChatSet();
-        for(Project p : currentUser.getProjectSet()) {
-            for(MessageChat mc: p.getMessageChatSet()) {
-                messageChat.add(mc);
-            }
-        }
 
         ModelAndView mv = new ModelAndView();
         mv.setViewName("message/messageInbox");
         mv.addObject("messageList", messageChat);
+
+        return mv;
+    }
+
+    @GetMapping("/messages/g")
+    public ModelAndView messageGroupHome(Principal principal) {
+        /* GET CURRENT USER AND IT'S MESSAGES */
+        User currentUser = userService.getUserByEmail(principal.getName());
+
+        Set<MessageProjectUser> messageProjectUser = currentUser.getMessageProjectUserSet();
+
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("message/messageInboxProject");
+        mv.addObject("messageList", messageProjectUser);
+
         return mv;
     }
 
@@ -139,9 +149,14 @@ public class MessageController {
 
         /* CHECK IF GROUP MESSAGE EXIST AND CURRENT USER IS PART OF THE MESSAGE GROUP */
         if (messageProject == null || !messageProjectService.checkMessageProjectUserExist(currentUser, messageProject)) {
-            mv.setViewName("redirect:/messages");
+            mv.setViewName("redirect:/messages/g");
             return mv;
         }
+
+        // User receiver = (messageProject.getUser().getId() == currentUser.getId()) ? messageChat.getProject().getAuthor() : messageChat.getUser();
+        // mv.addObject("showMessageList", true);
+        // mv.addObject("authorEmail", receiver.getEmail());
+        // mv.addObject("messageChat", messageProject);
 
         /* SUBSCRIBE TO REDIS */
         String key = "message:p:" + messageId;
@@ -163,7 +178,7 @@ public class MessageController {
         // ...
 
         mv.addObject("showMessageList", true);
-        mv.setViewName("message/messageDetail");
+        mv.setViewName("message/messageDetailProject");
         return mv;
     }
 

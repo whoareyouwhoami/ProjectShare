@@ -9,3 +9,11 @@ html, body {
 .message-inbox-block {
     height: 35rem;
 }
+
+.message-detail {
+    height: 35rem;
+}
+
+.msg-content {
+    margin-bottom: 5px;
+}

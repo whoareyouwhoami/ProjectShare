@@ -1,18 +1,18 @@
 version: '3.9'
 services:
-  backend:
-    build: .
-    container_name: container_backend
-    ports:
-      - "8080:8080"
-    environment:
-      spring.datasource.url: "jdbc:mysql://database:3306/ShareDB?serverTimezone=Asia/Seoul"
-    depends_on:
-      - database
-      - redis
-      - elasticsearch
-    networks:
-      - backend
+#  backend:
+#    build: .
+#    container_name: container_backend
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      spring.datasource.url: "jdbc:mysql://database:3306/ShareDB?serverTimezone=Asia/Seoul"
+#    depends_on:
+#      - database
+#      - redis
+#      - elasticsearch
+#    networks:
+#      - backend
 
   database:
     container_name: container_database
@@ -60,17 +60,17 @@ services:
     networks:
       - backend
 
-  kibana:
-    container_name: container_kibana
-    image: docker.elastic.co/kibana/kibana:7.14.0
-    ports:
-      - "5601:5601"
-    environment:
-      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
-    depends_on:
-      - elasticsearch
-    networks:
-      - backend
+#  kibana:
+#    container_name: container_kibana
+#    image: docker.elastic.co/kibana/kibana:7.14.0
+#    ports:
+#      - "5601:5601"
+#    environment:
+#      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+#    depends_on:
+#      - elasticsearch
+#    networks:
+#      - backend
 
 volumes:
   storage_mysql:

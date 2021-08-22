@@ -19,11 +19,14 @@
 <body>
     <jsp:include page="../frames/navbar.jsp" />
     <div class="container pt-2 pb-4">
+        <jsp:include page="../frames/message_header.jsp" />
+
+
         <div class="row mb-3 pe-3 ps-3">
             <h1 class="h2 mt-3 p-0 fw-normal">Inbox</h1>
         </div>
         <div class="row">
-            <div class="col-3 border border-primary  overflow-scroll message-inbox-block">
+            <div class="col-3 border border-primary  overflow-scroll message-inbox-block me-5">
                 <c:forEach var="message" items="${messageList}" varStatus="status">
                     <div class="row">
                         <div class="col">
@@ -47,30 +50,7 @@
                     </div>
                 </c:forEach>
             </div>
-
-            <div class="col-9 border border-primary">
-
-            </div>
         </div>
-
-<%--        <div>--%>
-<%--            <div style="overflow: auto; height: 700px; width: 25%; margin-top: 15px;">--%>
-
-
-<%--                <c:forEach var="message" items="${messageList}" varStatus="status">--%>
-<%--                    <div style="padding: 5px; border-bottom: 1px solid grey;">--%>
-<%--                        <small> Message ID: ${message.id}</small>--%>
-
-<%--                        <div style="margin-bottom: 3px">--%>
-<%--                            <p style="margin: 3px"><b>@${message.project.author.firstName}</b></p>--%>
-<%--                            <p style="margin: 3px;">Project - ${message.project.title}</p>--%>
-<%--                            <a href="${contextPath}/messages/m/${message.id}">Send message</a>--%>
-<%--                        </div>--%>
-<%--                    </div>--%>
-<%--                </c:forEach>--%>
-
-<%--            </div>--%>
-<%--        </div>--%>
     </div>
 
     <jsp:include page="../frames/footer.jsp" />

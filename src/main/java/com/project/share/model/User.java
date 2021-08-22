@@ -1,7 +1,6 @@
 package com.project.share.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.share.validate.ValidCheckEmail;
 import com.project.share.validate.ValidCheckPasswordConfirm;
 import org.hibernate.annotations.CreationTimestamp;
@@ -49,10 +48,12 @@ public class User implements UserDetails {
     private String passwordConfirm;
 
     @Past
+    @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
     @CreationTimestamp
+    @JsonIgnore
     private LocalDateTime register;
 
     private boolean accountNonExpired;
@@ -82,6 +83,9 @@ public class User implements UserDetails {
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private Set<MessageChat> messageChatSet;
+
+    @Transient
+    private String username;
 
     public User() {
     }

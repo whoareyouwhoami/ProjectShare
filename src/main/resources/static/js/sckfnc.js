@@ -64,17 +64,11 @@ function sendMessage() {
     let msg = {
         "project": pid,
         "message": message_id,
+        "receiver": to,
         "content": text,
         "sent": t,
         "type": type
     }
-    // let msg = {
-    //     "project": 1,
-    //     "message": 1,
-    //     "content": text,
-    //     "sent": t,
-    //     "type": type
-    // }
 
 
     if (text && isStomp) {
@@ -86,33 +80,33 @@ function sendMessage() {
 
 function showMessage(msg) {
     let d = document.createElement("div");
-    let b = document.createElement("b");
     let sm = document.createElement("small");
     let p1 = document.createElement("p");
     let p2 = document.createElement("p");
-    let p3 = document.createElement("p");
 
     let response = document.getElementById("response");
 
     let content = document.createTextNode(msg.content);
-    let time = document.createTextNode(msg.time);
+    let sent = document.createTextNode(msg.sent);
 
     let from;
-    if(msg.fromUser == null) {
+    console.log('showing...', msg);
+    if(msg.receiver === '' || msg.receiver === null) {
+        d.className = 'text-start msg-content'
         from = document.createTextNode("Me");
     } else {
-        from = document.createTextNode(msg.fromUser);
+        d.className = 'text-end msg-content'
+        from = document.createTextNode(msg.receiver);
     }
 
-    b.appendChild(from);
-    p1.appendChild(b);
+    p1.appendChild(from);
     p2.appendChild(content);
-    sm.appendChild(time);
-    p3.appendChild(sm);
-
+    sm.appendChild(sent);
     d.appendChild(p1);
     d.appendChild(p2);
-    d.appendChild(p3);
-
+    p1.className = 'fw-bold';
+    p1.style.margin = '3px'
+    p2.className = 'text-wrap'
+    p2.style.margin = '3px'
     response.appendChild(d);
 }

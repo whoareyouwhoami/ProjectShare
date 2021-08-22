@@ -20,7 +20,7 @@ public class RedisMessagePublishImpl implements RedisMessagePublish {
         /* SAVE CHAT IN REDIS */
         String key = "message:m:" + message.getMessageChat().getId();
         Timestamp sentTime = Timestamp.valueOf(message.getSent());
-         redisTemplate.boundZSetOps(key).add(message, sentTime.getTime());
+        redisTemplate.boundZSetOps(key).add(message, sentTime.getTime());
 
         /* PUSH TO REDIS PUB/SUB */
         redisTemplate.convertAndSend(topic.getTopic(), messageStructure);
