@@ -84,6 +84,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private Set<MessageChat> messageChatSet;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "project")
+    private Set<MessageChat> messageChatSetProject;
+
     @Transient
     private String username;
 
@@ -254,5 +258,13 @@ public class User implements UserDetails {
 
     public void setMessageChatSet(Set<MessageChat> messageChatSet) {
         this.messageChatSet = messageChatSet;
+    }
+
+    public Set<MessageChat> getMessageChatSetProject() {
+        return messageChatSetProject;
+    }
+
+    public void setMessageChatSetProject(Set<MessageChat> messageChatSetProject) {
+        this.messageChatSetProject = messageChatSetProject;
     }
 }

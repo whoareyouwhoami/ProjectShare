@@ -32,19 +32,13 @@ function webConnect() {
         if(message_type === "m") {
             console.log("INFO: SUBSCRIBE PRIVATE MESSAGE");
             client.subscribe("/secured/user/queue/specific-user" + "-user" + sessionId, function(out) {
-                let data = JSON.parse(out.body);
-                let midURL = currentURL.replace("http://localhost:8080/messages/", "");
-
-                // Show message
+                message_type = 'private';
                 showMessage(JSON.parse(out.body));
             });
         } else {
             console.log("INFO: SUBSCRIBE GROUP MESSAGE");
             client.subscribe("/secured/user/queue/group/p.*" , function(out) {
-                let data = JSON.parse(out.body);
-                let midURL = currentURL.replace("http://localhost:8080/messages/", "");
-
-                // Show message
+                message_type = 'group';
                 showMessage(JSON.parse(out.body));
             });
         }
@@ -54,7 +48,7 @@ function webConnect() {
 function sendMessage() {
     console.log("SENDING MESSAGE...");
     let today = new Date();
-    let to = document.getElementById("to").innerText;
+    let to = document.getElementById("to").value.trim();
     let text = document.getElementById("msg").value.trim();
     let pid = document.getElementById("pid").value;
     let t = today.getHours() + ":" + today.getMinutes();
@@ -70,11 +64,12 @@ function sendMessage() {
         "type": type
     }
 
-
     if (text && isStomp) {
         socket.send("/secured/room", {}, JSON.stringify(msg));
         document.getElementById("msg").value = "";
-        showMessage(msg);
+        if(message_type === 'private') {
+            showMessage(msg);
+        }
     }
 }
 
@@ -89,9 +84,9 @@ function showMessage(msg) {
     let content = document.createTextNode(msg.content);
     let sent = document.createTextNode(msg.sent);
 
-    let from;
-    console.log('showing...', msg);
-    if(msg.receiver === '' || msg.receiver === null) {
+    let from = msg.receiver;
+    let currentUser = document.getElementById("to").value.trim();
+    if(from === currentUser) {
         d.className = 'text-start msg-content'
         from = document.createTextNode("Me");
     } else {

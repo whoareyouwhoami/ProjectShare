@@ -23,7 +23,7 @@
 
 
     <div class="row mb-3 pe-3 ps-3">
-        <h1 class="h2 mt-3 p-0 fw-normal">Inbox</h1>
+        <h1 class="h2 mt-3 p-0 fw-normal">Group Message Inbox</h1>
     </div>
     <div class="row">
         <div class="col-3 border border-primary  overflow-scroll message-inbox-block me-5">

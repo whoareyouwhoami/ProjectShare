@@ -46,9 +46,9 @@
 
                 <div class="row mt-2">
                     <div class="col-10">
-                        <textarea class="form-control" id="msg" placeholder="Send message to ${authorEmail}"></textarea>
-                        <input type="hidden" id="to" value="${authorEmail}" />
-                        <input type="hidden" id="pid" value="${messageChat.project.id}" />
+                        <textarea class="form-control" id="msg" placeholder="Write something..."></textarea>
+                        <input type="hidden" id="to" value="${pageContext.request.userPrincipal.name}" />
+                        <input type="hidden" id="pid" value="${messageProject.project.id}" />
                     </div>
                     <div class="col align-self-center">
                         <button type="button" class="btn btn-primary" id="btnSend" >Send</button>
@@ -62,23 +62,23 @@
                 <tbody>
                 <tr>
                     <th scope="row">Title</th>
-                    <td>${messageChat.project.title}</td>
+                    <td>${messageProject.project.title}</td>
                 </tr>
                 <tr>
                     <th scope="row">Description</th>
-                    <td>${messageChat.project.description}</td>
+                    <td>${messageProject.project.description}</td>
                 </tr>
                 <tr>
                     <th scope="row">Number of members</th>
-                    <td>${messageChat.project.member}</td>
+                    <td>${messageProject.project.member}</td>
                 </tr>
                 <tr>
                     <th scope="row">Duration</th>
-                    <td class="text-muted">${messageChat.project.dateStart} ~ ${messageChat.project.dateEnd}</td>
+                    <td class="text-muted">${messageProject.project.dateStart} ~ ${messageProject.project.dateEnd}</td>
                 </tr>
                 <tr>
                     <th scope="row">Owner</th>
-                    <td class="text-muted">${messageChat.project.author.firstName} [ <span class="text-primary">${messageChat.project.author.email}</span> ]</td>
+                    <td class="text-muted">${messageProject.project.author.firstName} [ <span class="text-primary">${messageProject.project.author.email}</span> ]</td>
                 </tr>
                 </tbody>
             </table>

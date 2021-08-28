@@ -57,6 +57,11 @@ public class MessageController {
         /* GET CURRENT USER AND IT'S MESSAGES */
         User currentUser = userService.getUserByEmail(principal.getName());
         Set<MessageChat> messageChat = currentUser.getMessageChatSet();
+        Set<MessageChat> messageChatProject = currentUser.getMessageChatSetProject();
+
+        if(!messageChatProject.isEmpty()) {
+            messageChat.addAll(messageChatProject);
+        }
 
         ModelAndView mv = new ModelAndView();
         mv.setViewName("message/messageInbox");
@@ -154,9 +159,9 @@ public class MessageController {
         }
 
         // User receiver = (messageProject.getUser().getId() == currentUser.getId()) ? messageChat.getProject().getAuthor() : messageChat.getUser();
-        // mv.addObject("showMessageList", true);
+         mv.addObject("showMessageList", true);
         // mv.addObject("authorEmail", receiver.getEmail());
-        // mv.addObject("messageChat", messageProject);
+         mv.addObject("messageProject", messageProject);
 
         /* SUBSCRIBE TO REDIS */
         String key = "message:p:" + messageId;
