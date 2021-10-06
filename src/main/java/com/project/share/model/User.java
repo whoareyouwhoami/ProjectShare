@@ -6,6 +6,7 @@ import com.project.share.validate.ValidCheckPasswordConfirm;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -67,7 +69,7 @@ public class User implements UserDetails {
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "UserRole", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> roles;
+    private Set<Role> roles;
 
     /* GET LIST OF PROJECTS UPLOADED BY THE USER */
     @JsonIgnore
@@ -222,18 +224,22 @@ public class User implements UserDetails {
         this.enabled = enabled;
     }
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for(Role r: this.getRoles()) {
+            authorities.add(new SimpleGrantedAuthority(r.getName()));
+        }
+        return authorities;
     }
 
     public Set<Project> getProjectSet() {
@@ -266,5 +272,10 @@ public class User implements UserDetails {
 
     public void setMessageChatSetProject(Set<MessageChat> messageChatSetProject) {
         this.messageChatSetProject = messageChatSetProject;
+    }
+
+    @Override
+    public String toString() {
+        return "User [EMAIL: " + this.email + ", FNAME: " + this.firstName + " LNAME: " + this.lastName + " GENDER: " + this.gender + " PW: " + this.password + "]";
     }
 }

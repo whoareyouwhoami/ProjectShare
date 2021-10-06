@@ -43,22 +43,22 @@ services:
     networks:
       - backend
 
-  elasticsearch:
-    container_name: container_elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
-    ports:
-      - "9200:9200"
-#      - "127.0.0.1:9200:9200"
-    environment:
-      - node.name=es_node_1
-      - cluster.name=es_cluster_1
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx523m" # Not recommended in production
-    volumes:
-      - ./database/storage/elasticsearch:/usr/share/elasticsearch/data
-    networks:
-      - backend
+#  elasticsearch:
+#    container_name: container_elasticsearch
+#    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+#    ports:
+#      - "9200:9200"
+##      - "127.0.0.1:9200:9200"
+#    environment:
+#      - node.name=es_node_1
+#      - cluster.name=es_cluster_1
+#      - discovery.type=single-node
+#      - bootstrap.memory_lock=true
+#      - "ES_JAVA_OPTS=-Xms512m -Xmx523m" # Not recommended in production
+#    volumes:
+#      - ./database/storage/elasticsearch:/usr/share/elasticsearch/data
+#    networks:
+#      - backend
 
 #  kibana:
 #    container_name: container_kibana

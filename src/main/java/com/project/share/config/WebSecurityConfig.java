@@ -1,50 +1,80 @@
 package com.project.share.config;
 
-import com.project.share.config.security.CustomAuthenticationFailHandler;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.project.share.config.security.CustomAuthenticationFilter;
+import com.project.share.config.security.CustomAuthenticationProvider;
+import com.project.share.config.security.CustomFailureHandler;
+import com.project.share.config.security.CustomSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return super.userDetailsService();
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/login", "/register").permitAll()
+                .antMatchers(
+                        "/secured/**",
+                        "/secured/success",
+                        "/secured/socket",
+                        "/secured/success"
+                ).authenticated()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login")
+                .clearAuthentication(true)
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .and()
+                .addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
-    public BCryptPasswordEncoder encode() {
+    public CustomAuthenticationFilter customAuthenticationFilter() throws Exception {
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager());
+        customAuthenticationFilter.setAuthenticationSuccessHandler(customSuccessHandler());
+        customAuthenticationFilter.setAuthenticationFailureHandler(customFailureHandler());
+        customAuthenticationFilter.afterPropertiesSet();
+        return customAuthenticationFilter;
+    }
+
+    @Override
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) {
+        authenticationManagerBuilder.authenticationProvider(customAuthenticationProvider());
+    }
+
+    @Bean
+    public CustomAuthenticationProvider customAuthenticationProvider() {
+        return new CustomAuthenticationProvider(bCryptPasswordEncoder());
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager customAuthenticationManager() throws Exception {
-        return authenticationManager();
+    public CustomSuccessHandler customSuccessHandler() {
+        return new CustomSuccessHandler();
     }
 
     @Bean
-    public AuthenticationFailureHandler customAuthenticationFailureHandler() throws Exception {
-        return new CustomAuthenticationFailHandler();
-    }
-
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(encode());
+    public CustomFailureHandler customFailureHandler() {
+        return new CustomFailureHandler();
     }
 
     @Override
@@ -52,42 +82,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web
                 .ignoring()
                 .antMatchers("/css/**", "/js/**", "/img/**");
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        /*
-         * TODO:
-         *  - Add access denied and exception handling
-         */
-        http
-                .authorizeRequests()
-                .antMatchers("/login"  , "/register").permitAll()
-                // .antMatchers("/").hasRole("USER")
-                .antMatchers(
-                        "/secured/**",
-                        "/secured/success",
-                        "/secured/socket",
-                        "/secured/success"
-
-                ).authenticated()
-                .anyRequest().authenticated()
-                .and()
-                // .csrf().disable()
-                .formLogin()
-                .loginPage("/login")
-                .defaultSuccessUrl("/home", true)
-                .failureUrl("/login?error=true")
-                .failureHandler(customAuthenticationFailureHandler())
-                .usernameParameter("email")
-                .passwordParameter("password")
-                .and()
-                .logout()
-                .logoutSuccessUrl("/login?logout=true")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .and()
-                .exceptionHandling()
-                .accessDeniedPage("/denied");
     }
 }

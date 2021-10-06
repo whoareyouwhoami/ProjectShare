@@ -1,17 +1,14 @@
 package com.project.share.service;
 
 import com.project.share.model.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-import java.util.Optional;
-
-public interface UserService {
-    void authenticateLogin(String email, String password);
+public interface UserService extends UserDetailsService {
+    void authenticateLogin(User user, String password);
 
     boolean userExist(String email);
 
     User userAdd(User u);
 
     User getUserByEmail(String email);
-
-    User getUserById(int id);
 }
